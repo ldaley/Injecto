@@ -3,24 +3,26 @@ import gynamo.*
 @GynamoDependencies([OtherGynamo, YetAnotherGynamo])
 class TestGynamo extends Gynamo 
 {
-	def getSomething = {
-		return GynamoPropertyStorage[delegate].something
+	def getObjectProperty = {->
+		return GynamoPropertyStorage[delegate].objectProperty
 	}
 
-	def setSomething = {
-		GynamoPropertyStorage[delegate].something = it
+	def setObjectProperty = {
+		GynamoPropertyStorage[delegate].objectProperty = it
 	}
 	
-	def getStaticSomething = {
-		return GynamoPropertyStorage[delegate].something
+	static getStaticProperty = {->
+		return GynamoPropertyStorage[delegate].staticProperty
 	}
 
-	def setStaticSomething = {
-		GynamoPropertyStorage[delegate].something = it
+	static setStaticProperty = {
+		GynamoPropertyStorage[delegate].staticProperty = it
 	}
 		
+	def literalString = "aaa"
+	
 	void postGynamize(Class clazz)
 	{
-		clazz.staticSomething = '12345'
+		clazz.setStaticProperty('12345')
 	}
 }

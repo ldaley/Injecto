@@ -1,3 +1,18 @@
+/*
+* Copyright 2007 the original author or authors.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package gynamo;
 import java.beans.Introspector
 import java.lang.reflect.Method
@@ -5,6 +20,8 @@ import java.lang.reflect.Modifier
 
 /**
  * Abstract base for all Gynamos and implementer of the gynamize() method to inject a Gynamo into a class.
+ * @author ld@ldaley.com
+ * @since 1.0
  */
 abstract class Gynamo
 {
@@ -47,11 +64,11 @@ abstract class Gynamo
 				def propertyName = propertyGetterNameToPropertyName(getter.name)
 				if (Modifier.isStatic(getter.modifiers))
 				{
-					gynameeClass.metaClass."static"[propertyName] << getter.invoke(gynamoClass)
+					gynameeClass.metaClass."static"[propertyName] = getter.invoke(gynamoClass)
 				}
 				else
 				{
-					gynameeClass.metaClass[propertyName] << getter.invoke(gynamo)
+					gynameeClass.metaClass[propertyName] = getter.invoke(gynamo)
 				}
 			}
 

@@ -3,7 +3,7 @@
  */
 def projectName = "gynamo"
 def author = "Luke Daley"
-def version = "0.1"
+def version = "1.0"
 def dist_name = "${projectName}-${version}"
 def jar_name = "${projectName}-${version}.jar"
 def docs_dir = "api"
@@ -14,8 +14,18 @@ def test_file_suffix = "Tests"
  */
 def distro_contains_api_docs = false
 def distro_api_docs_dir_name = "api"
-def distro_contains_source = true
+
+/**
+ * Source distribution control
+ */
+def distro_contains_source = false
 def distro_src_dir_name = "src"
+
+/**
+ * Dependency distribution control
+ */
+def distro_contains_dependencies = false
+def distro_dependencies_dir_name = "lib"
 
 /**
  * Default output format for test reports and coverage reports
@@ -138,9 +148,6 @@ task(instrument: '')
  */
 task("compile-tests": '') {
 	depends(compile)
-	Ant.delete (quiet: "false", failonerror: "false") {
-		fileset(dir: compiled_tests_dir, includes: "**/*.class")
-	}
 	Ant.javac (srcdir: tests_dir, destDir: compiled_tests_dir, source: '1.4', target: '1.4', debug: 'on') {
 		classpath {
 			path (refid: 'compile_classpath')
@@ -199,7 +206,7 @@ task('test': "Synonym for 'test-" + default_test_report_format + "'") {
 /**
  * Defines targets for each individual test. If you have a test call
  */
-def testPattern = ~/(.+)${test_file_suffix}\.(.+)/
+def testPattern = ~/(.+${test_file_suffix})\.(.+)/
 def matchers = [:]
 new File("tests").list([
 	accept: { File dir, String name -> 
@@ -215,17 +222,16 @@ new File("tests").list([
 		}
 	}] as FilenameFilter).each {
 		
-		def testPrefix = matchers[it].group(1)
-		def testName = it
+		def testName = matchers[it].group(1)
 		def extension = matchers[it].group(2)
 		
-		task(("test-" + testPrefix): "Runs the test cases in '" + testName + "'") {
-			depends(compile)
+		task((testName): "Runs the test cases in '" + testName + "'") {
+			depends("compile-tests")
 			if (extension.equals("groovy") || extension.equals("java"))
 			{
 				if (extension.equals("groovy"))
 				{
-					Ant.groovyc (srcdir: tests_dir, includes: "**/${testName}", destdir: compiled_tests_dir) {
+					Ant.groovyc (srcdir: tests_dir, includes: "**/${testName}.groovy", destdir: compiled_tests_dir) {
 						classpath {
 							path (refid: 'compile_classpath')
 							pathelement (location: tests_dir)
@@ -237,7 +243,7 @@ new File("tests").list([
 				}
 				else if (extension.equals("java"))
 				{
-					Ant.javac (srcdir: tests_dir, destDir: compiled_tests_dir, includes: it, source: '1.4', target: '1.4', debug: 'on') {
+					Ant.javac (srcdir: tests_dir, destDir: compiled_tests_dir, includes: "**/${testName}.java", source: '1.4', target: '1.4', debug: 'on') {
 						classpath {
 							path (refid: 'compile_classpath')
 							pathelement (location: tests_dir)
@@ -258,7 +264,7 @@ new File("tests").list([
 					}
 					formatter(type : "plain", usefile: "no")
 					batchtest(fork : 'yes') {
-						fileset(dir: compiled_tests_dir, includes: "**/${testPrefix}${test_file_suffix}.class")
+						fileset(dir: compiled_tests_dir, includes: "**/${testName}.class")
 					}
 				}
 			}
@@ -340,9 +346,14 @@ task (dist: 'Gathers files together for distributing') {
 	}
 	
 	jar()
+	
 	Ant.copy(todir: dist_dir) {fileset(dir: dist_artefacts_dir, includes: '**/*')}
-	Ant.mkdir(dir: "${dist_dir}/lib")
-	Ant.copy(todir: "${dist_dir}/lib") {fileset(dir: lib_dir)}
+	
+	if (distro_contains_dependencies)
+	{
+		Ant.mkdir(dir: "${dist_dir}/${distro_dependencies_dir_name}")
+		Ant.copy(todir: "${dist_dir}/${distro_dependencies_dir_name}") {fileset(dir: lib_dir)}
+	}
 	
 	if (distro_contains_api_docs)
 	{
