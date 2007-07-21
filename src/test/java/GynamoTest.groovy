@@ -1,7 +1,7 @@
 import gynamo.*
-class GynamoTests extends GroovyTestCase {
+class GynamoTest extends GroovyTestCase {
 	
-	GynamoTests()
+	GynamoTest()
 	{
 		Gynamo.gynamize(TestGynamee,TestGynamo)
 	}
