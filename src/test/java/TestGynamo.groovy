@@ -21,7 +21,7 @@ class TestGynamo extends Gynamo
 		
 	def literalString = "aaa"
 	
-	void postGynamize(Class clazz)
+	static void postGynamize(Class clazz)
 	{
 		clazz.setStaticProperty('12345')
 	}

@@ -8,9 +8,9 @@ class GynamoTest extends GroovyTestCase {
 	
 	void testDependencyHandling()
 	{
-		assertEquals(true, TestGynamo.newInstance().isGynamized(TestGynamee))
-		assertEquals(true, OtherGynamo.newInstance().isGynamized(TestGynamee))
-		assertEquals(true, YetAnotherGynamo.newInstance().isGynamized(TestGynamee))
+		assertEquals(true, Gynamo.isGynamized(TestGynamee, TestGynamo))
+		assertEquals(true, Gynamo.isGynamized(TestGynamee, OtherGynamo))
+		assertEquals(true, Gynamo.isGynamized(TestGynamee, YetAnotherGynamo))
 	}
 	
 	void testAttachment()

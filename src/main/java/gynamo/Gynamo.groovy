@@ -25,6 +25,9 @@ import java.lang.reflect.Modifier
  */
 abstract class Gynamo
 {
+	
+	static registry = [:]
+	
 	/**
 	 * Getter names that are excluded from being Gynamo properties.
 	 */
@@ -40,8 +43,7 @@ abstract class Gynamo
 	 */
 	static void gynamize(Class gynameeClass, Class gynamoClass)
 	{	
-		def gynamo = gynamoClass.newInstance()
-		if (gynamo.isGynamized(gynameeClass) == false)
+		if (isGynamized(gynameeClass, gynamoClass) == false)
 		{
 			// Resolve dependencies
 			def gynamoDependency = gynamoClass.getAnnotation(GynamoDependency)
@@ -59,7 +61,9 @@ abstract class Gynamo
 			}
 		
 			// Gives the Gynamo a chance to make sure that gynameeClass is fit to be Gynamized
-			gynamo.preGynamize(gynameeClass)
+			
+			gynamoClass.preGynamize(gynameeClass)
+			def gynamo = gynamoClass.newInstance()
 			getCopyablePropertiesGettersOfGynamo(gynamoClass).each { Method getter ->
 				def propertyName = propertyGetterNameToPropertyName(getter.name)
 				if (Modifier.isStatic(getter.modifiers))
@@ -73,7 +77,10 @@ abstract class Gynamo
 			}
 
 			// Gives the Gynamo a chance to do any setup with the new methods
-			gynamo.postGynamize(gynameeClass)
+			gynamoClass.postGynamize(gynameeClass)
+			
+			if (registry[gynameeClass] == null) registry[gynameeClass] = []
+			registry[gynameeClass] << gynamoClass
 		}
 	}
 	
@@ -102,7 +109,7 @@ abstract class Gynamo
 	 * Subclasses should override if they wish to do something BEFORE a class gets Gynamized,
 	 * but after dependant Gynamos have been injected.
 	 */
-	void preGynamize(Class clazz)
+	static void preGynamize(Class clazz)
 	{
 		
 	}
@@ -110,7 +117,7 @@ abstract class Gynamo
 	/**
 	 * Subclasses should override if they want to do something AFTER a class gets Gynamized.
 	 */
-	void postGynamize(Class clazz)
+	static void postGynamize(Class clazz)
 	{
 		
 	}
@@ -118,11 +125,8 @@ abstract class Gynamo
 	/**
 	 * 
 	 */
-	boolean isGynamized(Class clazz)
+	static boolean isGynamized(Class gynamee, Class gynamo)
 	{
-		return Gynamo.getCopyablePropertiesGettersOfGynamo(this.class).find { Method getter ->
-			def propertyName = propertyGetterNameToPropertyName(getter.name)
-			return clazz.metaClass.hasMetaMethod(propertyName) || clazz.metaClass.hasMetaProperty(propertyName)
-		} != null
+		return registry[gynamee]?.contains(gynamo)
 	}
 }
