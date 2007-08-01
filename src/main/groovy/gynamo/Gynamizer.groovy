@@ -14,16 +14,17 @@
 * limitations under the License.
 */
 package gynamo;
+import gynamo.annotation.*;
 import java.beans.Introspector
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
- * Abstract base for all Gynamos and implementer of the gynamize() method to inject a Gynamo into a class.
+ * Class that takes a Gynamo and copies all its readable properties to a Gynamees meta class
  * @author ld@ldaley.com
  * @since 1.0
  */
-abstract class Gynamo
+abstract class Gynamizer
 {
 	
 	static registry = [:]
@@ -74,14 +75,18 @@ abstract class Gynamo
 			def gynamo = gynamoClass.newInstance()
 
 			getCopyablePropertiesGettersOfGynamo(gynamoClass).each { Method getter ->
-				def propertyName = propertyGetterNameToPropertyName(getter.name)
+				def propertyName = getter.name[3].toLowerCase() + getter.name.substring(4)
+				def field = gynamoClass.getDeclaredField(propertyName) 
+				def gynamizeAsAnnotation = field?.getAnnotation(GynamizeAs)
+				def gynamizeAs = (gynamizeAsAnnotation) ? gynamizeAsAnnotation.value() : propertyName
+				
 				if (Modifier.isStatic(getter.modifiers))
 				{
-					gynameeClass.metaClass."static"[propertyName] = getter.invoke(gynamoClass)
+					gynameeClass.metaClass."static"[gynamizeAs] = getter.invoke(gynamoClass)
 				}
 				else
 				{
-					gynameeClass.metaClass[propertyName] = getter.invoke(gynamo)
+					gynameeClass.metaClass[gynamizeAs] = getter.invoke(gynamo)
 				}
 			}
 
@@ -114,13 +119,7 @@ abstract class Gynamo
 			}
 		}
 		return copyablePropertyGetterMethods
-	}
-	
-	static String propertyGetterNameToPropertyName(String propertyGetterName)
-	{
-		return propertyGetterName[3].toLowerCase() + propertyGetterName.substring(4)
-	}
-	
+	}	
 	
 	/**
 	 * 

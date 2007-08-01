@@ -2,7 +2,7 @@ import gynamo.annotation.*
 import gynamo.GynamoPropertyStorage
 
 @GynamoDependencies([OtherGynamo, YetAnotherGynamo])
-class TestGynamo 
+class ExampleGynamo 
 {
 	def getObjectProperty = {->
 		return GynamoPropertyStorage[delegate].objectProperty
