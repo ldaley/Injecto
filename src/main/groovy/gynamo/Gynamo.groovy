@@ -62,8 +62,17 @@ abstract class Gynamo
 		
 			// Gives the Gynamo a chance to make sure that gynameeClass is fit to be Gynamized
 			
-			gynamoClass.preGynamize(gynameeClass)
+			try
+			{
+				gynamoClass.preGynamize(gynameeClass)
+			}
+			catch (MissingMethodException e)
+			{
+				
+			}
+
 			def gynamo = gynamoClass.newInstance()
+
 			getCopyablePropertiesGettersOfGynamo(gynamoClass).each { Method getter ->
 				def propertyName = propertyGetterNameToPropertyName(getter.name)
 				if (Modifier.isStatic(getter.modifiers))
@@ -77,8 +86,15 @@ abstract class Gynamo
 			}
 
 			// Gives the Gynamo a chance to do any setup with the new methods
-			gynamoClass.postGynamize(gynameeClass)
-			
+			try
+			{
+				gynamoClass.postGynamize(gynameeClass)
+			}
+			catch (MissingMethodException e)
+			{
+				
+			}
+
 			if (registry[gynameeClass] == null) registry[gynameeClass] = []
 			registry[gynameeClass] << gynamoClass
 		}
@@ -105,22 +121,6 @@ abstract class Gynamo
 		return propertyGetterName[3].toLowerCase() + propertyGetterName.substring(4)
 	}
 	
-	/**
-	 * Subclasses should override if they wish to do something BEFORE a class gets Gynamized,
-	 * but after dependant Gynamos have been injected.
-	 */
-	static void preGynamize(Class clazz)
-	{
-		
-	}
-	
-	/**
-	 * Subclasses should override if they want to do something AFTER a class gets Gynamized.
-	 */
-	static void postGynamize(Class clazz)
-	{
-		
-	}
 	
 	/**
 	 * 
