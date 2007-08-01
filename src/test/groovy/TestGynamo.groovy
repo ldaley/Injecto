@@ -1,7 +1,8 @@
-import gynamo.*
+import gynamo.annotation.*
+import gynamo.GynamoPropertyStorage
 
 @GynamoDependencies([OtherGynamo, YetAnotherGynamo])
-class TestGynamo extends Gynamo 
+class TestGynamo 
 {
 	def getObjectProperty = {->
 		return GynamoPropertyStorage[delegate].objectProperty

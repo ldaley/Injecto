@@ -3,22 +3,27 @@ class GynamoTest extends GroovyTestCase {
 	
 	GynamoTest()
 	{
-		Gynamo.gynamize(TestGynamee,TestGynamo)
+		Gynamizer.gynamize(TestGynamee,TestGynamo)
 	}
 	
 	void testDependencyHandling()
 	{
-		assertEquals(true, Gynamo.isGynamized(TestGynamee, TestGynamo))
-		assertEquals(true, Gynamo.isGynamized(TestGynamee, OtherGynamo))
-		assertEquals(true, Gynamo.isGynamized(TestGynamee, YetAnotherGynamo))
+		assert(Gynamizer.isGynamized(TestGynamee, TestGynamo))
+		assert(Gynamizer.isGynamized(TestGynamee, OtherGynamo))
+		assert(Gynamizer.isGynamized(TestGynamee, YetAnotherGynamo))
 	}
 	
 	void testAttachment()
 	{
-		assertEquals(true, TestGynamee.metaClass.hasMetaMethod("otherGynamoMethod"))
-		assertEquals(true, TestGynamee.metaClass.hasMetaMethod("yetAnotherGynamoMethod"))
-		assertEquals(true, TestGynamee.metaClass.hasMetaMethod("getObjectProperty"))
-		assertEquals(true, TestGynamee.metaClass.hasMetaMethod("getStaticProperty"))
+		assert(TestGynamee.metaClass.hasMetaMethod("yetAnotherGynamoMethod"))
+		assert(TestGynamee.metaClass.hasMetaMethod("getObjectProperty"))
+		assert(TestGynamee.metaClass.hasMetaMethod("getStaticProperty"))
+	}
+	
+	void testGynamizeAsWorks()
+	{
+		assert(TestGynamee.metaClass.hasMetaMethod("aliasedMethod"))
+		assert(TestGynamee.metaClass.hasMetaMethod("aliasedStaticMethod"))
 	}
 	
 	void testProperties()
