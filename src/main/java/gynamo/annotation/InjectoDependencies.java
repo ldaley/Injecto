@@ -13,33 +13,19 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package gynamo;
+package injecto.annotation;
+import java.lang.annotation.*;
 
 /**
- * Provides storage for dynamically added properties.
+ * Specifies an array Gynamos that this Gynamo depends on
  * 
- * E.g. GynamoPropertyStorage[delegate].someAttribute = "blah"
+ * e.g. @GynamoDependencies([SomeOtherGynamo, AnotherGynamo]) (groovy)
+ * e.g. @GynamoDependencies({SomeOtherGynamo, AnotherGynamo}) (java)
  * @author ld@ldaley.com
  * @since 1.0
  */
-class GynamoPropertyStorage 
-{
-	/**
-	 * The properties
-	 */
-	static Map properties = Collections.synchronizedMap(new WeakHashMap())
-	
-	/**
-	 * Allows use of the [] operator on the class.
-	 * 
-	 * @return Will always be a map.
-	 */
-	static Object getAt(caller)
-	{
-		if (properties[caller] == null)
-		{
-			properties[caller] = [:]
-		}
- 		return properties[caller]
-	}
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InjectoDependencies {
+    Class[] value();
 }

@@ -13,19 +13,18 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package gynamo.annotation;
+package injecto.annotation;
 import java.lang.annotation.*;
 
 /**
- * Specifies an array Gynamos that this Gynamo depends on
+ * Specifies a single Gynamo that this Gynamo depends on
  * 
- * e.g. @GynamoDependencies([SomeOtherGynamo, AnotherGynamo]) (groovy)
- * e.g. @GynamoDependencies({SomeOtherGynamo, AnotherGynamo}) (java)
+ * e.g. @GynamoDependency(SomeOtherGynamo)
  * @author ld@ldaley.com
  * @since 1.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GynamoDependencies {
-    Class[] value();
+public @interface InjectoDependency {
+    Class value();
 }

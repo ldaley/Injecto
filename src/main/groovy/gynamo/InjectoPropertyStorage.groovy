@@ -13,17 +13,33 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package gynamo.annotation;
-import java.lang.annotation.*;
+package injecto;
 
 /**
- * Used to specify a different name to use when attaching to the Gynamee
+ * Provides storage for dynamically added properties.
  * 
+ * E.g. InjectoPropertyStorage[delegate].someAttribute = "blah"
  * @author ld@ldaley.com
- * @since 1.2
+ * @since 1.0
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-public @interface GynamizeAs {
-    String value();
+class InjectoPropertyStorage 
+{
+	/**
+	 * The properties
+	 */
+	static Map properties = Collections.synchronizedMap(new WeakHashMap())
+	
+	/**
+	 * Allows use of the [] operator on the class.
+	 * 
+	 * @return Will always be a map.
+	 */
+	static Object getAt(owner)
+	{
+		if (properties[owner] == null)
+		{
+			properties[owner] = [:]
+		}
+ 		return properties[owner]
+	}
 }

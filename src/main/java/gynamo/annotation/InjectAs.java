@@ -13,18 +13,17 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package gynamo.annotation;
+package injecto.annotation;
 import java.lang.annotation.*;
 
 /**
- * Specifies a single Gynamo that this Gynamo depends on
+ * Used to specify a different name to use when attaching to the Gynamee
  * 
- * e.g. @GynamoDependency(SomeOtherGynamo)
  * @author ld@ldaley.com
- * @since 1.0
+ * @since 1.2
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GynamoDependency {
-    Class value();
+public @interface InjectAs {
+    String value();
 }
