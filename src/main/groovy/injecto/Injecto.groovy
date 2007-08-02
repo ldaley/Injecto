@@ -36,16 +36,14 @@ abstract class Injecto
 	 * @param injectee The class that will be injected into
 	 * @param injecto The class that contains the things to be injected
 	 */
-	static void gynamize(Class injectee, Class injecto)
+	static void inject(Class injectee, Class injecto)
 	{	
-		if (isInjectedWith(injectee, injecto) == false)
+		if (isInjected(injectee, injecto) == false)
 		{
 			injectDependencies(injectee, injecto)
-			tryPreGynamizeHook(injectee, injecto)
+			tryPreInjectHook(injectee, injecto)
 			
-			Injectable.allFor(injectee, injecto).each {
-				it.inject()
-			}
+			Injectable.allFor(injectee, injecto).each { it.inject() }
 			
 			addToRegistry(injectee, injecto)
 			tryPostInjectHook(injectee, injecto)
@@ -56,10 +54,10 @@ abstract class Injecto
 	{
 		def dependencies = []
 
-		if (injecto.getAnnotation(InjectoDependencies)) dependencies << injecto.getAnnotation(InjectoDependencies)
-		if (injecto.getAnnotation(InjectoDependency)) dependencies << injecto.getAnnotation(InjectoDependency)
+		injecto.getAnnotation(InjectoDependencies)?.value().each { dependencies << it }
+		if (injecto.getAnnotation(InjectoDependency)) dependencies << injecto.getAnnotation(InjectoDependency).value()
 		
-		dependencies.value().each { inject(injectee, it) }
+		dependencies.each { Injecto.inject(injectee, it) }
 	}
 	
 	private static tryPreInjectHook(Class injectee, Class injecto)

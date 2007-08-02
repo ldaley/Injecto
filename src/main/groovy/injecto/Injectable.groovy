@@ -1,5 +1,6 @@
 package injecto;
 import injecto.dynamic.*
+import injecto.annotation.*
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.lang.reflect.Field
@@ -19,15 +20,17 @@ class Injectable
 	Field field
 	String fieldName
 	String name
-	boolean isStatic
 	boolean isDynamicMethod
 	boolean isDynamicGetter
 	boolean isDynamicSetter
-	int dynamicDispatchPrecedence
-	
-	Injectable(Class injectee, Class injecto, Object injectoInstance, Method injectableGetter)
+	Boolean isInjectoProperty
+
+	Injectable(Class injectee, Class injecto, Object injectoInstance, Method getter)
 	{
-		super(injectee: injectee, injecto: injecto, injectoInstance: injectoInstance, getter: getter)
+		this.injectee = injectee
+		this.injecto = injecto
+		this.injectoInstance = injectoInstance
+		this.getter = getter
 	}
 	
 	String getFieldName()
@@ -46,7 +49,7 @@ class Injectable
 	{
 		if (name == null)
 		{
-			name = getField()?.getAnnotation(InjectWithName)?.value()
+			name = getField()?.getAnnotation(InjectAs)?.value()
 			if (name == null) name = getFieldName()
 		}
 		return name
@@ -54,8 +57,7 @@ class Injectable
 	
 	boolean getIsStatic()
 	{
-		if (isStatic == null) isStatic = Modifier.isStatic(getter.modifiers)
-		return isStatic
+		return Modifier.isStatic(getter.modifiers)
 	}
 	
 	boolean getIsDynamicMethod()
@@ -73,21 +75,45 @@ class Injectable
 		return false;
 	}
 	
+	Boolean getIsInjectoProperty()
+	{
+		if (isInjectoProperty == null) isInjectoProperty = new Boolean(getField()?.getAnnotation(InjectoProperty) != null)
+		return isInjectoProperty
+	}
+	
 	void inject()
 	{
-		if (getIsDynamicMethod()) injectAsDynamicMethod()
-		if (getIsDynamicGetter()) injectAsDynamicGetter()
-		if (getIsDynamicSetter()) injectAsDynamicSetter()
-		
-		if (getIsStatic())
+		if (getIsInjectoProperty())
 		{
-			injectStatically()
+			injectoAsInjectoProperty()
 		}
 		else
 		{
-			injectNonStatically()
+			if (getIsDynamicMethod()) injectAsDynamicMethod()
+			if (getIsDynamicGetter()) injectAsDynamicGetter()
+			if (getIsDynamicSetter()) injectAsDynamicSetter()
+
+			if (getIsStatic())
+			{
+				injectStatically()
+			}
+			else
+			{
+				injectNonStatically()
+			}	
 		}
+	}
+	
+	private void injectoAsInjectoProperty()
+	{
+		def n = getName()
+		def nCapitalised = n[0].toUpperCase() + n.substring(1)
+		def g = { -> InjectoPropertyStorage[delegate][n] }
+		def s = { InjectoPropertyStorage[delegate][n] = it }
+		def attachPoint = (getIsStatic()) ? injectee.metaClass.'static' : injectee.metaClass
 		
+		attachPoint["get" + nCapitalised] = g
+		attachPoint["set" + nCapitalised] = s
 	}
 	
 	private void injectAsDynamicMethod()
@@ -107,12 +133,12 @@ class Injectable
 	
 	private void injectStatically()
 	{
-		injectee.metaClass[getName()] = getter.invoke(injectoInstance)
+		injectee.metaClass.'static'[getName()] = getter.invoke(injecto)
 	}
 	
 	private void injectNonStatically()
 	{
-		injectee.metaClass.'static'[getName()] = getter.invoke(injecto)
+		injectee.metaClass[getName()] = getter.invoke(injectoInstance)
 	}
 	
 	private static List allFor(Class injectee, Class injecto)
@@ -130,5 +156,7 @@ class Injectable
 				injectables << new Injectable(injectee, injecto, injectoInstance, method)
 			}
 		}
+		
+		return injectables
 	}
 }

@@ -6,7 +6,7 @@ class InjectoTest extends GroovyTestCase {
 	
 	InjectoTest()
 	{
-		Gynamizer.gynamize(ExampleInjectee,ExampleInjecto)
+		Injecto.inject(ExampleInjectee,ExampleInjecto)
 	}
 	
 	void testDependencyHandling()
@@ -56,25 +56,16 @@ class ExampleInjectee {}
 @InjectoDependencies([OtherInjecto, YetAnotherInjecto])
 class ExampleInjecto 
 {
-	def getObjectProperty = {->
-		return InjectoPropertyStorage[delegate].objectProperty
-	}
+	@InjectoProperty
+	def objectProperty
 
-	def setObjectProperty = {
-		InjectoPropertyStorage[delegate].objectProperty = it
-	}
+	@InjectoProperty
+	@InjectAs("staticProperty")
+	static staticWrongNameProperty
 	
-	static getStaticProperty = {->
-		return InjectoPropertyStorage[delegate].staticProperty
-	}
-
-	static setStaticProperty = {
-		InjectoPropertyStorage[delegate].staticProperty = it
-	}
-		
 	def literalString = "aaa"
 	
-	static void postGynamize(Class clazz)
+	static void postInject(Class clazz)
 	{
 		clazz.setStaticProperty('12345')
 	}
@@ -82,12 +73,12 @@ class ExampleInjecto
 
 class OtherInjecto {
 
-	@GynamizeAs("aliasedMethod")
+	@InjectAs("aliasedMethod")
 	def otherInjectoMethod = {
 
 	}
 
-	@GynamizeAs("aliasedStaticMethod")
+	@InjectAs("aliasedStaticMethod")
 	static otherInjectoStaticMethod = {
 
 	}
