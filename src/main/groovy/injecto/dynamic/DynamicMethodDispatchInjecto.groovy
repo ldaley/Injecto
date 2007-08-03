@@ -1,15 +1,24 @@
 package injecto.dynamic;
-import injecto.InjectoPropertyStorage;
 
 class DynamicMethodDispatchInjecto 
 {
-/*	@InjectoProperty*/
-	def dynamicInjectedInstanceMethodDispatchTable
+	List dynamicInjectedInstanceMethodDispatchTable = []
 	
-/*	def invo*/
-	
-	static postInject(Class injectee)
-	{
+	def methodMissing = { String methodName, Object[] args ->
 		
+		def dispatchTo = delegate.dynamicInjectedInstanceMethodDispatchTable.find {
+			it.find { dispatchToMethodName, dispatchPattern ->
+				methodName ==~ ~/$dispatchPattern/
+			}
+		}
+		
+		if (dispatchTo)
+		{
+			return delegate."$dispatchTo"(methodName, args)
+		}
+		else
+		{
+			throw new MissingMethodException(methodName, delegate.class, args, false);
+		}
 	}
 }

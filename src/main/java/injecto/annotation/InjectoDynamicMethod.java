@@ -20,5 +20,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectoDynamicMethod
 {
-	String value();
+	String pattern();
+	int precedence();
 }

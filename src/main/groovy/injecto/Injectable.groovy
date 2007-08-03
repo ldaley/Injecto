@@ -4,6 +4,7 @@ import injecto.annotation.*
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.lang.reflect.Field
+import java.util.regex.Pattern
 
 class Injectable 
 {
@@ -12,6 +13,68 @@ class Injectable
 	 * Getter names that are excluded from being considered for injection
 	 */
 	static exclusions = ["getMetaClass", "getProperty"]
+
+	/**
+	 * 
+	 */
+	static dynamicInstanceMethodDispatchTableProperty = "dynamicInstanceMethodDispatchTable"
+
+	/**
+	 * 
+	 */
+	static dynamicStaticMethodDispatchTableProperty = "dynamicStaticMethodDispatchTable"
+	
+	/**
+	 * 
+	 */
+	static dynamicDispatchToCalculator = { Map dispatchTable, String name ->
+
+		println "dispatching: $name"
+		def dispatchTo
+		dispatchTable.find {
+			println "testing $name against ${it.value.dispatchPattern}"
+			it.find {
+				if (it.value.dispatchPattern.matcher(name).matches())
+				{
+					dispatchTo = it.value.dispatchTo
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
+		return dispatchTo
+	}
+	
+	static instanceMethodMissing = { String methodName, Object[] args ->
+		println "in dispatch"
+		def dispatchTo = delegate.class.dynamicDispatchToCalculator(delegate.class."$dynamicInstanceMethodDispatchTableProperty", methodName)
+		if (dispatchTo)
+		{
+			delegate."$dispatchTo"(methodName, args)
+		}
+		else
+		{
+			throw new MissingMethodException(methodName, delegate.class, args)
+		}
+	}
+
+	static staticMethodMissing = { String methodName, Object[] args ->
+		def dispatchTo = delegate.class.dynamicDispatchToCalculator(delegate."$dynamicStaticMethodDispatchTableProperty", methodName)
+		if (dispatchTo)
+		{
+			delegate."$dispatchTo"(methodName, args)
+		}
+		else
+		{
+			throw new MissingMethodException(methodName, delegate.class, args)
+		}
+	}
+	
+	static dynamicDispatchTableComparator = [compare:{a,b -> a.precedence <=> b.precedence}] as Comparator
 	
 	Class injectee
 	Class injecto
@@ -62,7 +125,7 @@ class Injectable
 	
 	boolean getIsDynamicMethod()
 	{
-		return false;
+		return getField()?.getAnnotation(InjectoDynamicMethod)
 	}
 	
 	boolean getIsDynamicGetter()
@@ -87,38 +150,70 @@ class Injectable
 		{
 			injectoAsInjectoProperty()
 		}
+		else if (getIsDynamicMethod()) 
+		{
+			injectAsDynamicMethod()
+		}
+		else if (getIsDynamicGetter()) 
+		{
+			injectAsDynamicGetter()
+		}
+		else if (getIsDynamicSetter()) 
+		{
+			injectAsDynamicSetter()
+		}
 		else
 		{
-			if (getIsDynamicMethod()) injectAsDynamicMethod()
-			if (getIsDynamicGetter()) injectAsDynamicGetter()
-			if (getIsDynamicSetter()) injectAsDynamicSetter()
-
-			if (getIsStatic())
-			{
-				injectStatically()
-			}
-			else
-			{
-				injectNonStatically()
-			}	
+			injectPlainly()
 		}
 	}
 	
 	private void injectoAsInjectoProperty()
 	{
-		def n = getName()
-		def nCapitalised = n[0].toUpperCase() + n.substring(1)
-		def g = { -> InjectoPropertyStorage[delegate][n] }
-		def s = { InjectoPropertyStorage[delegate][n] = it }
-		def attachPoint = (getIsStatic()) ? injectee.metaClass.'static' : injectee.metaClass
-		
-		attachPoint["get" + nCapitalised] = g
-		attachPoint["set" + nCapitalised] = s
+		attachPropertyWithGetterAndSetter(getName(), null, getIsStatic())
 	}
 	
 	private void injectAsDynamicMethod()
 	{
+		def table
+		def dispatchTableProperty = (getIsStatic()) ? dynamicStaticMethodDispatchTableProperty : dynamicInstanceMethodDispatchTableProperty
+		try
+		{
+			table = injectee."$dispatchTableProperty"
+		}
+		catch (MissingPropertyException)
+		{
+			println "MME <thrown></thrown>"
+		}
 		
+		if (table == null)
+		{
+			println "attaching dynamic method dispatcher"
+			table = [:]
+			
+			attachPropertyWithGetterAndSetter(dispatchTableProperty, table, true)
+			attach("dynamicDispatchToCalculator", dynamicDispatchToCalculator, true)
+			def methodMissingReplacement = getIsStatic() ? staticMethodMissing : instanceMethodMissing
+			attach("methodMissing", methodMissingReplacement, getIsStatic())
+		}
+		
+		def tableForInjecto = table.find { println it; it.key.equals(injecto.name) }?.value
+		if (tableForInjecto == null)
+		{
+			println "attaching dynamic method dispatcher for injecto ${injecto.name}"
+			tableForInjecto = new TreeSet(dynamicDispatchTableComparator)
+			table[injecto.name] = tableForInjecto
+		}
+		
+		def annotation = getField().getAnnotation(InjectoDynamicMethod)
+
+		tableForInjecto.value << [
+			dispatchPattern: Pattern.compile(annotation.pattern()),
+			dispatchToMethodName: getName(),
+			precedence: annotation.precedence()
+		]
+		
+		injectPlainly()
 	}
 	
 	private void injectAsDynamicGetter()
@@ -131,14 +226,36 @@ class Injectable
 		
 	}
 	
-	private void injectStatically()
+	private injectPlainly()
 	{
-		injectee.metaClass.'static'[getName()] = getter.invoke(injecto)
+		attach(getName(), (getIsStatic()) ? getter.invoke(injecto) : getter.invoke(injectoInstance), getIsStatic())
 	}
 	
-	private void injectNonStatically()
+	private void attach(String name, Object thing, boolean statically)
 	{
-		injectee.metaClass[getName()] = getter.invoke(injectoInstance)
+		if (statically)
+		{
+			injectee.metaClass.'static'[name] = thing
+		}
+		else
+		{
+			injectee.metaClass[name] = thing
+		}
+	}
+	
+	private void attachPropertyWithGetterAndSetter(String propertyName, Object initialValue, boolean statically)
+	{
+
+		def propertyNameCapitalised = propertyName[0].toUpperCase() + propertyName.substring(1)
+		println "attaching property $propertyNameCapitalised"
+		def g = { -> 
+			if (InjectoPropertyStorage[delegate].containsKey(propertyName) == false) InjectoPropertyStorage[delegate][propertyName] = initialValue
+			return InjectoPropertyStorage[delegate][propertyName] 
+		}
+		def s = { InjectoPropertyStorage[delegate][propertyName] = it }
+		
+		attach("get" + propertyNameCapitalised, g, statically)
+		attach("set" + propertyNameCapitalised, s, statically)
 	}
 	
 	private static List allFor(Class injectee, Class injecto)

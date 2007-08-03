@@ -4,21 +4,23 @@ import injecto.InjectoPropertyStorage
 
 class InjectoTest extends GroovyTestCase {
 	
+	def instance
+	
 	InjectoTest()
 	{
 		Injecto.inject(ExampleInjectee,ExampleInjecto)
+ 		instance = new ExampleInjectee()
 	}
 	
 	void testDependencyHandling()
 	{
 		assert(Injecto.isInjected(ExampleInjectee, ExampleInjecto))
 		assert(Injecto.isInjected(ExampleInjectee, OtherInjecto))
-		assert(Injecto.isInjected(ExampleInjectee, YetAnotherInjecto))
+		assert(Injecto.isInjected(ExampleInjectee, DynamicMethodExampleInjecto))
 	}
 	
 	void testAttachment()
 	{
-		assert(ExampleInjectee.metaClass.hasMetaMethod("yetAnotherInjectoMethod"))
 		assert(ExampleInjectee.metaClass.hasMetaMethod("getObjectProperty"))
 		assert(ExampleInjectee.metaClass.hasMetaMethod("getStaticProperty"))
 	}
@@ -49,11 +51,16 @@ class InjectoTest extends GroovyTestCase {
 		ExampleInjectee.setStaticProperty("54321")
 		assertEquals("54321", ExampleInjectee.getStaticProperty()) // Value set in ExampleInjecto postGynamize
 	}
+	
+	void testDynamicMethodDispatch()
+	{
+		assertEquals(1, instance.dynamicMethodXXX())
+	}
 }
 
 class ExampleInjectee {}
 
-@InjectoDependencies([OtherInjecto, YetAnotherInjecto])
+@InjectoDependencies([OtherInjecto, DynamicMethodExampleInjecto])
 class ExampleInjecto 
 {
 	@InjectoProperty
@@ -85,9 +92,21 @@ class OtherInjecto {
 	
 }
 
-class YetAnotherInjecto {
+class DynamicMethodExampleInjecto {
 
-	def yetAnotherInjectoMethod = {
+	@InjectoDynamicMethod(
+		pattern = "^dynamicMethodX(.+)",
+		precedence = 1
+	)
+	def dynamicMethodMissingHandler = { String methodName, Object[] args ->
+		return 1
 	}
 	
+	@InjectoDynamicMethod(
+		pattern = "^dynamicMethodZZ(.+)",
+		precedence = 2
+	)
+	def lowerPrecedenceDynamicMethodMissingHandler = { String methodName, Object[] args ->
+		return 2
+	}
 }
