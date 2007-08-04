@@ -28,7 +28,9 @@ abstract class Injecto
 	/**
 	 * Maintains a record of which class have been injected with what
 	 */
-	static registry = [:]
+	private static registry = [:]
+	
+	static boolean logInjections = false
 
 	/**
 	 * Copies the readable properties from one class (injecto) to another (injectee)

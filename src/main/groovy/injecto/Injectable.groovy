@@ -1,5 +1,5 @@
 package injecto;
-import injecto.dynamic.*
+import injecto.support.*
 import injecto.annotation.*
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -13,68 +13,6 @@ class Injectable
 	 * Getter names that are excluded from being considered for injection
 	 */
 	static exclusions = ["getMetaClass", "getProperty"]
-
-	/**
-	 * 
-	 */
-	static dynamicInstanceMethodDispatchTableProperty = "dynamicInstanceMethodDispatchTable"
-
-	/**
-	 * 
-	 */
-	static dynamicStaticMethodDispatchTableProperty = "dynamicStaticMethodDispatchTable"
-	
-	/**
-	 * 
-	 */
-	static dynamicDispatchToCalculator = { Map dispatchTable, String name ->
-
-		println "dispatching: $name"
-		def dispatchTo
-		dispatchTable.find {
-			println "testing $name against ${it.value.dispatchPattern}"
-			it.find {
-				if (it.value.dispatchPattern.matcher(name).matches())
-				{
-					dispatchTo = it.value.dispatchTo
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-
-		return dispatchTo
-	}
-	
-	static instanceMethodMissing = { String methodName, Object[] args ->
-		println "in dispatch"
-		def dispatchTo = delegate.class.dynamicDispatchToCalculator(delegate.class."$dynamicInstanceMethodDispatchTableProperty", methodName)
-		if (dispatchTo)
-		{
-			delegate."$dispatchTo"(methodName, args)
-		}
-		else
-		{
-			throw new MissingMethodException(methodName, delegate.class, args)
-		}
-	}
-
-	static staticMethodMissing = { String methodName, Object[] args ->
-		def dispatchTo = delegate.class.dynamicDispatchToCalculator(delegate."$dynamicStaticMethodDispatchTableProperty", methodName)
-		if (dispatchTo)
-		{
-			delegate."$dispatchTo"(methodName, args)
-		}
-		else
-		{
-			throw new MissingMethodException(methodName, delegate.class, args)
-		}
-	}
-	
-	static dynamicDispatchTableComparator = [compare:{a,b -> a.precedence <=> b.precedence}] as Comparator
 	
 	Class injectee
 	Class injecto
@@ -84,9 +22,7 @@ class Injectable
 	String fieldName
 	String name
 	boolean isDynamicMethod
-	boolean isDynamicGetter
-	boolean isDynamicSetter
-	Boolean isInjectoProperty
+	def thingToAttach
 
 	Injectable(Class injectee, Class injecto, Object injectoInstance, Method getter)
 	{
@@ -94,6 +30,7 @@ class Injectable
 		this.injecto = injecto
 		this.injectoInstance = injectoInstance
 		this.getter = getter
+		this.thingToAttach = (getIsStatic()) ? getter.invoke(injecto) : getter.invoke(injectoInstance)
 	}
 	
 	String getFieldName()
@@ -127,112 +64,72 @@ class Injectable
 	{
 		return getField()?.getAnnotation(InjectoDynamicMethod)
 	}
-	
-	boolean getIsDynamicGetter()
-	{
-		return false;
-	}
-	
-	boolean getIsDynamicSetter()
-	{
-		return false;
-	}
-	
-	Boolean getIsInjectoProperty()
-	{
-		if (isInjectoProperty == null) isInjectoProperty = new Boolean(getField()?.getAnnotation(InjectoProperty) != null)
-		return isInjectoProperty
-	}
-	
+		
 	void inject()
 	{
-		if (getIsInjectoProperty())
-		{
-			injectoAsInjectoProperty()
-		}
-		else if (getIsDynamicMethod()) 
+		if (getIsDynamicMethod()) 
 		{
 			injectAsDynamicMethod()
-		}
-		else if (getIsDynamicGetter()) 
-		{
-			injectAsDynamicGetter()
-		}
-		else if (getIsDynamicSetter()) 
-		{
-			injectAsDynamicSetter()
 		}
 		else
 		{
 			injectPlainly()
 		}
 	}
-	
-	private void injectoAsInjectoProperty()
-	{
-		attachPropertyWithGetterAndSetter(getName(), null, getIsStatic())
-	}
-	
+		
 	private void injectAsDynamicMethod()
 	{
-		def table
-		def dispatchTableProperty = (getIsStatic()) ? dynamicStaticMethodDispatchTableProperty : dynamicInstanceMethodDispatchTableProperty
-		try
+		if ((thingToAttach instanceof Closure) == false)
 		{
-			table = injectee."$dispatchTableProperty"
+			throw new IllegalStateException("An InjectoDynamicMethod must be a closure, " + getFieldName() + " on" + injecto.name + " is not")
 		}
-		catch (MissingPropertyException)
+		if (thingToAttach.parameterTypes[0].equals(String) == false)
 		{
-			println "MME <thrown></thrown>"
+			throw new IllegalStateException("An InjectoDynamicMethod must have 'String' as the first parameter type, " + getFieldName() + " on" + injecto.name + " doesn't")
 		}
 		
-		if (table == null)
+		def dispatchTable
+		if (getIsStatic())
 		{
-			println "attaching dynamic method dispatcher"
-			table = [:]
-			
-			attachPropertyWithGetterAndSetter(dispatchTableProperty, table, true)
-			attach("dynamicDispatchToCalculator", dynamicDispatchToCalculator, true)
-			def methodMissingReplacement = getIsStatic() ? staticMethodMissing : instanceMethodMissing
-			attach("methodMissing", methodMissingReplacement, getIsStatic())
+			Injecto.inject(injectee, DynamicStaticMethodsInjecto)
+			dispatchTable = injectee.dynamicStaticMethodDispatchTable
+
 		}
-		
-		def tableForInjecto = table.find { println it; it.key.equals(injecto.name) }?.value
-		if (tableForInjecto == null)
+		else
 		{
-			println "attaching dynamic method dispatcher for injecto ${injecto.name}"
-			tableForInjecto = new TreeSet(dynamicDispatchTableComparator)
-			table[injecto.name] = tableForInjecto
+			Injecto.inject(injectee, DynamicInstanceMethodsInjecto)
+			dispatchTable = injectee.dynamicInstanceMethodDispatchTable
+			println ""
+			println "$dispatchTable"
+			println ""
 		}
 		
 		def annotation = getField().getAnnotation(InjectoDynamicMethod)
 
-		tableForInjecto.value << [
-			dispatchPattern: Pattern.compile(annotation.pattern()),
-			dispatchToMethodName: getName(),
-			precedence: annotation.precedence()
-		]
+		def mapping = new DynamicDispatchMapping(
+			pattern: Pattern.compile(annotation.pattern()),
+			name: getName(),
+			precedence: annotation.precedence(),
+			argTypes: thingToAttach.parameterTypes
+		)
+		
+		dispatchTable.add(injecto.name, mapping)
 		
 		injectPlainly()
 	}
-	
-	private void injectAsDynamicGetter()
-	{
 		
-	}
-	
-	private void injectAsDynamicSetter()
-	{
-		
-	}
-	
 	private injectPlainly()
 	{
-		attach(getName(), (getIsStatic()) ? getter.invoke(injecto) : getter.invoke(injectoInstance), getIsStatic())
+		attach(getName(), thingToAttach, getIsStatic())
 	}
 	
 	private void attach(String name, Object thing, boolean statically)
 	{
+		if (Injecto.logInjections)
+		{
+			println "Injecting '${name}'(${thing.toString()}) into '${injectee.name}' from '${injecto.name}'(static: ${statically})"
+		}
+		
 		if (statically)
 		{
 			injectee.metaClass.'static'[name] = thing
