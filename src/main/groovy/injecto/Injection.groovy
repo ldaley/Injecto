@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier
 import java.lang.reflect.Field
 import java.util.regex.Pattern
 
-class Injectable 
+class Injection 
 {
 	
 	/**
@@ -18,11 +18,12 @@ class Injectable
 	Class injecto
 	Object injectoInstance
 	Method getter
-	Field field
 	String fieldName
+	Field field
 	String name
-	boolean isDynamicMethod
+	def dynamicMethodAnnotation
 	def thingToAttach
+	boolean isStatic
 
 	Injectable(Class injectee, Class injecto, Object injectoInstance, Method getter)
 	{
@@ -31,43 +32,20 @@ class Injectable
 		this.injectoInstance = injectoInstance
 		this.getter = getter
 		this.thingToAttach = (getIsStatic()) ? getter.invoke(injecto) : getter.invoke(injectoInstance)
-	}
-	
-	String getFieldName()
-	{
-		if (fieldName == null) fieldName = getter.name[3].toLowerCase() + getter.name.substring(4)
-		return fieldName
-	}
-	
-	Field getField()
-	{
-		if (field == null) field = injecto.getDeclaredField(getFieldName())
-		return field 
-	}
-	
-	String getName()
-	{
-		if (name == null)
-		{
-			name = getField()?.getAnnotation(InjectAs)?.value()
-			if (name == null) name = getFieldName()
-		}
-		return name
-	}
-	
-	boolean getIsStatic()
-	{
-		return Modifier.isStatic(getter.modifiers)
-	}
-	
-	boolean getIsDynamicMethod()
-	{
-		return getField()?.getAnnotation(InjectoDynamicMethod)
+		this.field = injecto.getDeclaredField(getFieldName())
+		this.fieldName = getter.name[3].toLowerCase() + getter.name.substring(4)
+		
+		this.name = getField()?.getAnnotation(InjectAs)?.value()
+		if (this.name == null) this.name = getFieldName()
+		
+		this.isStatic = Modifier.isStatic(getter.modifiers)
+		
+		this.dynamicMethodAnnotation = getField()?.getAnnotation(InjectoDynamicMethod)
 	}
 		
 	void inject()
 	{
-		if (getIsDynamicMethod()) 
+		if (this.dynamicMethodAnnotation != null) 
 		{
 			injectAsDynamicMethod()
 		}
@@ -79,38 +57,32 @@ class Injectable
 		
 	private void injectAsDynamicMethod()
 	{
-		if ((thingToAttach instanceof Closure) == false)
+		if ((this.thingToAttach instanceof Closure) == false)
 		{
-			throw new IllegalStateException("An InjectoDynamicMethod must be a closure, " + getFieldName() + " on" + injecto.name + " is not")
+			throw new IllegalStateException("An InjectoDynamicMethod must be a closure, " + this.fieldName + " on" + injecto.name + " is not")
 		}
-		if (thingToAttach.parameterTypes[0].equals(String) == false)
+		if (this.thingToAttach.parameterTypes[0].equals(String) == false)
 		{
-			throw new IllegalStateException("An InjectoDynamicMethod must have 'String' as the first parameter type, " + getFieldName() + " on" + injecto.name + " doesn't")
+			throw new IllegalStateException("An InjectoDynamicMethod must have 'String' as the first parameter type, " + this.fieldName + " on" + injecto.name + " doesn't")
 		}
 		
 		def dispatchTable
-		if (getIsStatic())
+		if (this.isStatic)
 		{
 			Injecto.inject(injectee, DynamicStaticMethodsInjecto)
 			dispatchTable = injectee.dynamicStaticMethodDispatchTable
-
 		}
 		else
 		{
 			Injecto.inject(injectee, DynamicInstanceMethodsInjecto)
 			dispatchTable = injectee.dynamicInstanceMethodDispatchTable
-			println ""
-			println "$dispatchTable"
-			println ""
 		}
-		
-		def annotation = getField().getAnnotation(InjectoDynamicMethod)
 
 		def mapping = new DynamicDispatchMapping(
-			pattern: Pattern.compile(annotation.pattern()),
-			name: getName(),
-			precedence: annotation.precedence(),
-			argTypes: thingToAttach.parameterTypes
+			pattern: Pattern.compile(this.dynamicMethodAnnotation.pattern()),
+			name: this.name,
+			precedence: this.dynamicMethodAnnotation.precedence(),
+			argTypes: this.thingToAttach.parameterTypes
 		)
 		
 		dispatchTable.add(injecto.name, mapping)
@@ -120,7 +92,7 @@ class Injectable
 		
 	private injectPlainly()
 	{
-		attach(getName(), thingToAttach, getIsStatic())
+		attach(this.name, this.thingToAttach, this.isStatic)
 	}
 	
 	private void attach(String name, Object thing, boolean statically)
@@ -140,7 +112,7 @@ class Injectable
 		}
 	}
 	
-	private void attachPropertyWithGetterAndSetter(String propertyName, Object initialValue, boolean statically)
+	private void attachManagedPropertyWithGetterAndSetter(String propertyName, Object initialValue, boolean statically)
 	{
 
 		def propertyNameCapitalised = propertyName[0].toUpperCase() + propertyName.substring(1)
