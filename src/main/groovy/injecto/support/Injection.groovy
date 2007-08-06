@@ -1,10 +1,14 @@
-package injecto;
-import injecto.support.*
+package injecto.support;
+import injecto.Injecto
+import injecto.dynamicmethod.*
 import injecto.annotation.*
+import injecto.property.*
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.lang.reflect.Field
 import java.util.regex.Pattern
+
+
 
 class Injection 
 {
@@ -22,32 +26,42 @@ class Injection
 	Field field
 	String name
 	def dynamicMethodAnnotation
+	def propertyAnnotation
 	def thingToAttach
 	boolean isStatic
 
-	Injectable(Class injectee, Class injecto, Object injectoInstance, Method getter)
+	Injection(Class injectee, Class injecto, Object injectoInstance, Method getter)
 	{
 		this.injectee = injectee
 		this.injecto = injecto
 		this.injectoInstance = injectoInstance
 		this.getter = getter
-		this.thingToAttach = (getIsStatic()) ? getter.invoke(injecto) : getter.invoke(injectoInstance)
-		this.field = injecto.getDeclaredField(getFieldName())
+		this.isStatic = Modifier.isStatic(getter.modifiers)
+		this.thingToAttach = (this.isStatic) ? getter.invoke(injecto) : getter.invoke(injectoInstance)
 		this.fieldName = getter.name[3].toLowerCase() + getter.name.substring(4)
+		this.field = injecto.getDeclaredField(this.fieldName)
 		
 		this.name = getField()?.getAnnotation(InjectAs)?.value()
 		if (this.name == null) this.name = getFieldName()
 		
-		this.isStatic = Modifier.isStatic(getter.modifiers)
-		
 		this.dynamicMethodAnnotation = getField()?.getAnnotation(InjectoDynamicMethod)
+		
+		this.propertyAnnotation = getField()?.getAnnotation(InjectoProperty)
 	}
 		
 	void inject()
 	{
-		if (this.dynamicMethodAnnotation != null) 
+		if (this.dynamicMethodAnnotation != null && this.propertyAnnotation != null)
+		{
+			throw IllegalStateException("A Injecto can not define something that is a dynamic method and a property, " + this.fieldName + " on" + injecto.name + " has both annotations")
+		}
+		else if (this.dynamicMethodAnnotation != null) 
 		{
 			injectAsDynamicMethod()
+		}
+		else if (this.propertyAnnotation != null)
+		{
+			injectAsProperty()
 		}
 		else
 		{
@@ -89,7 +103,54 @@ class Injection
 		
 		injectPlainly()
 	}
+
+	private void injectAsProperty()
+	{
+		def propertyName = this.name
+		def propertyNameCapitalised = this.name[0].toUpperCase() + this.name.substring(1)
+		use (Injecto) {
+			(this.isStatic) ? injectee.inject(StaticPropertyInjecto) : injectee.inject(InstancePropertyInjecto)
+		}
 		
+		if (this.propertyAnnotation.read())
+		{
+			try
+			{
+				injecto.getDeclaredField("getGet" + propertyNameCapitalised)
+			}
+			catch (NoSuchFieldException e)
+			{
+				def g = { -> return delegate.getInjectoProperty(propertyName) }
+				attach("get" + propertyNameCapitalised, g, this.isStatic)
+			}
+		}
+		
+		if (this.propertyAnnotation.write())
+		{
+			try
+			{
+				injecto.getDeclaredField("getSet" + propertyNameCapitalised)
+			}
+			catch (NoSuchFieldException e)
+			{
+				def s = { delegate.setInjectoProperty(propertyName, it) }
+				attach("set" + propertyNameCapitalised, s, this.isStatic)
+			}
+		}
+		
+		if (this.thingToAttach != null)
+		{
+			if (this.isStatic)
+			{
+				InjectoPropertyStorage[injectee][propertyName] = thingToAttach
+			}
+			else
+			{
+				InjectoPropertyStorage.addDefaultFor(injectee,injecto,propertyName, this.fieldName)
+			}
+		}
+	}
+
 	private injectPlainly()
 	{
 		attach(this.name, this.thingToAttach, this.isStatic)
@@ -111,22 +172,7 @@ class Injection
 			injectee.metaClass[name] = thing
 		}
 	}
-	
-	private void attachManagedPropertyWithGetterAndSetter(String propertyName, Object initialValue, boolean statically)
-	{
 
-		def propertyNameCapitalised = propertyName[0].toUpperCase() + propertyName.substring(1)
-		println "attaching property $propertyNameCapitalised"
-		def g = { -> 
-			if (InjectoPropertyStorage[delegate].containsKey(propertyName) == false) InjectoPropertyStorage[delegate][propertyName] = initialValue
-			return InjectoPropertyStorage[delegate][propertyName] 
-		}
-		def s = { InjectoPropertyStorage[delegate][propertyName] = it }
-		
-		attach("get" + propertyNameCapitalised, g, statically)
-		attach("set" + propertyNameCapitalised, s, statically)
-	}
-	
 	private static List allFor(Class injectee, Class injecto)
 	{
 		def injectables = []
@@ -139,7 +185,7 @@ class Injection
 				injecto.isAssignableFrom(method.declaringClass) == true
 			)
 			{
-				injectables << new Injectable(injectee, injecto, injectoInstance, method)
+				injectables << new Injection(injectee, injecto, injectoInstance, method)
 			}
 		}
 		

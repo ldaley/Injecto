@@ -13,12 +13,19 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package injecto.annotation;
-import java.lang.annotation.*;
+package injecto.property;
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-public @interface InjectoDynamicGetter
+/**
+ * 
+ * @author Luke Daley <ld@ldaley.com>
+ */
+class InstancePropertyInjecto 
 {
-	String value();
+	def getInjectoProperty = { String propertyName -> 
+		return InjectoPropertyStorage[delegate][propertyName]
+	}
+	
+	def setInjectoProperty = { String propertyName, Object value ->
+		InjectoPropertyStorage[delegate][propertyName] = value
+	}
 }

@@ -15,6 +15,7 @@
 */
 package injecto;
 import injecto.annotation.*;
+import injecto.support.Injection;
 
 
 /**
@@ -45,7 +46,7 @@ abstract class Injecto
 			injectDependencies(injectee, injecto)
 			tryPreInjectHook(injectee, injecto)
 			
-			Injectable.allFor(injectee, injecto).each { it.inject() }
+			Injection.allFor(injectee, injecto).each { it.inject() }
 			
 			addToRegistry(injectee, injecto)
 			tryPostInjectHook(injectee, injecto)

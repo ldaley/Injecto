@@ -20,4 +20,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectoProperty 
 {
+    boolean read() default true; 
+    boolean write() default true;
 }

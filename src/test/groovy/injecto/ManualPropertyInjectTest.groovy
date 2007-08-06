@@ -1,6 +1,6 @@
 package injecto;
 import injecto.annotation.*
-import injecto.InjectoPropertyStorage
+import injecto.property.InjectoPropertyStorage
 
 /**
  * Some tests currently disabled because of Groovy bug.

@@ -13,21 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package injecto.support;
-import injecto.InjectoPropertyStorage
+package injecto.dynamicmethod;
+import injecto.annotation.InjectoProperty
 
 /**
  * An injecto that handles the dynamic dispatch on objects.
  */
 class DynamicInstanceMethodsInjecto 
 {
-	static getDynamicInstanceMethodDispatchTable = { -> 
-		if (InjectoPropertyStorage[delegate].containsKey("dynamicInstanceMethodDispatchTable") == false) 
-		{
-			InjectoPropertyStorage[delegate]["dynamicInstanceMethodDispatchTable"] = new DynamicDispatchTable()
-		}
-		return InjectoPropertyStorage[delegate]["dynamicInstanceMethodDispatchTable"]
-	}
+	@InjectoProperty(write = false)
+	static dynamicInstanceMethodDispatchTable = new DynamicDispatchTable()
 	
 	def methodMissingDynamicDispatch = { String name, Object[] args ->
 		println "methodMissingDynamicDispatch: $name"
