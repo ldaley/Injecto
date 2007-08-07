@@ -16,13 +16,6 @@
 package injecto.annotation;
 import java.lang.annotation.*;
 
-/**
- * Specifies a single Gynamo that this Gynamo depends on
- * 
- * e.g. @GynamoDependency(SomeOtherGynamo)
- * @author ld@ldaley.com
- * @since 1.0
- */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectoDependency {

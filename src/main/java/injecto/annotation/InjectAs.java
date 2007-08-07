@@ -16,12 +16,6 @@
 package injecto.annotation;
 import java.lang.annotation.*;
 
-/**
- * Used to specify a different name to use when attaching to the Gynamee
- * 
- * @author ld@ldaley.com
- * @since 1.2
- */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectAs {

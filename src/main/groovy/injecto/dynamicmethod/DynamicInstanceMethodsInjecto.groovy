@@ -18,6 +18,8 @@ import injecto.annotation.InjectoProperty
 
 /**
  * An injecto that handles the dynamic dispatch on objects.
+ * 
+ * @author Luke Daley <ld@ldaley.com>
  */
 class DynamicInstanceMethodsInjecto 
 {

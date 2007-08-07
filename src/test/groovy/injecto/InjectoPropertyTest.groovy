@@ -31,7 +31,7 @@ class InjectoPropertyTest extends GroovyTestCase
 	void testStaticReadWriteNoDefault() 
 	{
 		assertEquals(true, IPe1.metaClass.hasMetaMethod("getStaticReadWriteNoDefault"))
-		assertEquals(true, IPe1.metaClass.hasMetaMethod("getStaticReadWriteNoDefault"))
+		assertEquals(true, IPe1.metaClass.hasMetaMethod("setStaticReadWriteNoDefault"))
 		
 		assertNull(IPe1.staticReadWriteNoDefault)
 		IPe1.staticReadWriteNoDefault = 'changed'
@@ -56,11 +56,49 @@ class InjectoPropertyTest extends GroovyTestCase
 	void testStaticReadWriteWithDefault() 
 	{
 		assertEquals(true, IPe1.metaClass.hasMetaMethod("getStaticReadWriteWithDefault"))
-		assertEquals(true, IPe1.metaClass.hasMetaMethod("getStaticReadWriteWithDefault"))
+		assertEquals(true, IPe1.metaClass.hasMetaMethod("setStaticReadWriteWithDefault"))
 		
 		assertEquals("staticDefault", IPe1.staticReadWriteWithDefault)
 		IPe1.staticReadWriteWithDefault = 'changed'
 		assertEquals('changed', IPe1.staticReadWriteWithDefault)
+	}
+	
+	void testInstanceReadNoDefault()
+	{
+		assertEquals(true, instance1.metaClass.hasMetaMethod("getInstanceReadNoDefault"))
+		assertEquals(false, instance1.metaClass.hasMetaMethod("setInstanceReadNoDefault"))
+	}
+	
+	void testStaticReadNoDefault()
+	{
+		assertEquals(true, IPe1.metaClass.hasMetaMethod("getStaticReadNoDefault"))
+		assertEquals(false, IPe1.metaClass.hasMetaMethod("setStaticReadNoDefault"))
+	}
+	
+	void testInstanceWriteNoDefault()
+	{
+		assertEquals(false, instance1.metaClass.hasMetaMethod("getInstanceWriteNoDefault"))
+		assertEquals(true, instance1.metaClass.hasMetaMethod("setInstanceWriteNoDefault"))
+	}
+	
+	void testStaticWriteNoDefault()
+	{
+		assertEquals(false, IPe1.metaClass.hasMetaMethod("getStaticWriteNoDefault"))
+		assertEquals(true, IPe1.metaClass.hasMetaMethod("setStaticWriteNoDefault"))
+	}
+	
+	void testInstanceReadWriteCustomGetterWithDefault()
+	{
+		assertEquals("customWithCustomGetter", instance1.instanceReadWriteCustomGetterWithDefault)
+		instance1.instanceReadWriteCustomGetterWithDefault = "changed"
+		assertEquals("customchanged", instance1.instanceReadWriteCustomGetterWithDefault)
+	}
+	
+	void testStaticReadWriteCustomGetterWithDefault()
+	{
+		assertEquals("customWithCustomGetter", IPe1.staticReadWriteCustomGetterWithDefault)
+		IPe1.staticReadWriteCustomGetterWithDefault = "changed"
+		assertEquals("customchanged", IPe1.staticReadWriteCustomGetterWithDefault)
 	}
 }
 
@@ -91,4 +129,18 @@ class IPo1
 	
 	@InjectoProperty(read = false)
 	static staticWriteNoDefault
+	
+	@InjectoProperty
+	def instanceReadWriteCustomGetterWithDefault = "WithCustomGetter"
+	
+	def getInstanceReadWriteCustomGetterWithDefault = { -> 
+		"custom" + delegate.getInjectoProperty("instanceReadWriteCustomGetterWithDefault")
+	}
+	
+	@InjectoProperty
+	static staticReadWriteCustomGetterWithDefault = "WithCustomGetter"
+	
+	static getStaticReadWriteCustomGetterWithDefault = { -> 
+		"custom" + delegate.getInjectoProperty("staticReadWriteCustomGetterWithDefault")
+	}
 }

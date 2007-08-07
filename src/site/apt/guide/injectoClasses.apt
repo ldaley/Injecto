@@ -1,0 +1,56 @@
+	--------------
+	Injecto Classes
+	--------------
+	
+Injecto Classes
+
+	An Injecto class is a class that is eligible to be injected into another class. It is a plain Groovy class that follows certain conventions.
+	
+	One of the goals of the Injecto library is for Injecto classes to be as natural as possible. However, there are some things to keep in mind.
+	
+* Lineage
+
+	Injecto classes <<must>> directly descend from <<<Object>>>.
+
+* Constructor
+
+	Injecto classes <<must>> have a no argument constructor.
+
+* Methods as closures
+
+	Methods to be injected must be defined as closure properties. For example, to define an instance method called <<<doIt>>> that takes two <<<String>>> arguments you would declare that as ...
+	
++-------------------------------+
+class ExampleInjecto
+{
+	def doIt = { String s1, String s2 ->
+		// Do 'it' in here
+	}
+}
++-------------------------------+
+
+	Static methods defined as ...
+	
++-------------------------------+
+class ExampleInjecto
+{
+	static doIt = { String s1, String s2 ->
+		// Do 'it' in here
+	}
+}
++-------------------------------+
+	
+* Properties
+
+	Properties will be added as public fields with no type safety. They can be defined as ...
+	
++-------------------------------+
+class ExampleInjecto
+{
+	def myProperty = "myProperty"
+}
++-------------------------------+
+
+	<<NOTE:>> Static dynamic properties are currently not supported.
+	
+	An alternative to <<plain>> properties, are {{{guide/managedProperties.html}<<managed properties>>}}.

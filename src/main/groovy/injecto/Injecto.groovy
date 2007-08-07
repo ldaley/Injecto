@@ -20,8 +20,7 @@ import injecto.support.Injection;
 
 /**
  * 
- * 
- * @since 1.0
+ * @author Luke Daley <ld@ldaley.com>
  */
 abstract class Injecto
 {

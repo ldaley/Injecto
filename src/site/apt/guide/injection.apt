@@ -1,0 +1,22 @@
+	---------------------
+	Injection
+	---------------------
+
+Injection
+
+	Injection is achieved by the <<<static>>> method <<<inject()>>> on the <<<Injecto>>> class.
+	
++-------------------------------+
+import injecto.Injecto
+
+Injecto.inject(InjecteeClass, InjectoClass)
++-------------------------------+
+
+	Or a more expressive way using Groovy categories ...
+	
++-------------------------------+
+import injecto.Injecto
+
+use (Injecto) { InjecteeClass.inject(InjectoClass) }
++-------------------------------+
+	

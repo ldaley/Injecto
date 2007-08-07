@@ -16,11 +16,8 @@
 package injecto.property;
 
 /**
- * Provides storage for dynamically added properties.
  * 
- * E.g. InjectoPropertyStorage[delegate].someAttribute = "blah"
- * @author ld@ldaley.com
- * @since 1.0
+ * @author Luke Daley <ld@ldaley.com>
  */
 class InjectoPropertyStorage 
 {

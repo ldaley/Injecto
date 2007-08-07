@@ -16,14 +16,6 @@
 package injecto.annotation;
 import java.lang.annotation.*;
 
-/**
- * Specifies an array Gynamos that this Gynamo depends on
- * 
- * e.g. @GynamoDependencies([SomeOtherGynamo, AnotherGynamo]) (groovy)
- * e.g. @GynamoDependencies({SomeOtherGynamo, AnotherGynamo}) (java)
- * @author ld@ldaley.com
- * @since 1.0
- */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectoDependencies {

@@ -1,0 +1,36 @@
+	-------------------
+	Injecto - Introduction
+	-------------------
+
+	An Injecto is a {{{http://groovy.codehaus.org}Groovy}} class that can be <injected> into other classes.
+	
+	Want to make all <<<String>>>s bark? Me neither, but here is how you could do it using Injecto's ...
+	
++-------------------------------+
+import injecto.Injecto
+
+class Dog
+{
+	def bark = { -> println "woof" }
+}
+
+use (Injecto) { String.inject(Dog) }
+
+"".bark() // prints "woof"
++-------------------------------+
+
+	Interesting huh? Well maybe not. But it can be used for for something useful. Injecto is the mechanism used to inject dynamic behaviour for the {{{http://ldaley.com/gldapo}Gldapo}} library.
+	
+	Some other key features ...
+
+	* {{{guide/dependencies.html}Dependencies}}
+
+	* {{{guide/dynamicMethods.html}Dynamic Methods}}
+
+	* {{{guide/managedProperties.html}Managed Properties}}
+	
+Motivations
+
+	Injecto is an attempt at bring Ruby mixin like behaviour to Groovy.
+	
+	It is also serves the purpose of allowing dynamic functionality to be discretely packaged and documented using Groovydoc.

@@ -20,7 +20,6 @@ import org.codehaus.groovy.runtime.MetaClassHelper
 /**
  * Provides the dynamic dispatch logic as well as some util type stuff.
  * 
- * @since 1.0
  * @author Luke Daley <ld@ldaley.com>
  */
 class DynamicDispatchHelper

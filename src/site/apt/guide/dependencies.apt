@@ -1,0 +1,46 @@
+	------------
+	Dependencies
+	------------
+
+Dependencies
+	
+	Injecto's can specify that they depend on other Injectos via annotations ...
+	
++-------------------------------+
+import injecto.annotation.InjectoDependency
+import injecto.Injecto
+
+@InjectoDependency(InjectoB)
+class InjectoA
+{
+	def myMethod = { ->
+		return delegate.myDependedOnMethod()
+	}
+}
+
+class InjectoB{}
+{
+	def myDependedOnMethod = { ->
+		return "you rang?"
+	}
+}
+
+class Injectee {}
+
+use(Injecto) { Injectee.inject(InjectoA) }
+def i = new Injectee()
+
+assert(i.myDependedOnMethod() == "you rang?")
+assert(i.myMethod() == "you rang?")
++-------------------------------+
+
+	If you have multiple dependencies you can use the <<<InjectoDependencies>>> annotation ...
+
++-------------------------------+
+import injecto.annotation.InjectoDependencies
+
+@InjectoDependencies([InjectoB, InjectoC])
+class InjectoA {}
++-------------------------------+
+
+	<<Warning:>> Be careful of circular dependencies. Your application will blow up (eventually) with <<StackOverflowError>> if you do have a circular dependency.

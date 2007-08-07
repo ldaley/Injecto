@@ -1,0 +1,17 @@
+	------
+	Issues
+	------
+	
+	The following are identified things to be aware of if you are using Injecto.
+	
+	* Thread Safety
+	
+	Tests for thread safety have not been done. There is likely to be problems.
+	
+	* High level
+	
+	Injecto is pure Groovy and uses high level meta class mechanisms to achieve what it does. If performance is a concern you would most likely be better served by a more specific solution.
+	
+	* Dynamic method evalutations aren't cached
+	
+	This will be fixed at some stage. But for the time being each dynamic method call is rather expensive, proportionate to how many dynamic method handlers are attached.

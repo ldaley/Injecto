@@ -21,6 +21,7 @@ import java.util.regex.Pattern
  * 
  * Used as entries in the DynamicDispatchTable
  * @see DynamicDispatchTable
+ * @author Luke Daley <ld@ldaley.com>
  */
 class DynamicDispatchMapping 
 {
