@@ -43,7 +43,7 @@ class DynamicStaticMethodsInjecto
 		}
 	}
 	
-	static methodMissing = { String name, Object[] args ->
+	static methodMissing = { String name, args ->
 		println "methodMissing (static): $name"
 		return delegate.methodMissingDynamicDispatch(name, args)
 	}

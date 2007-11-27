@@ -44,7 +44,7 @@ class DynamicInstanceMethodsInjecto
 		}
 	}
 	
-	def methodMissing = { String name, Object[] args ->
+	def methodMissing = { String name, args ->
 		println "methodMissing: $name"
 		return delegate.methodMissingDynamicDispatch(name, args)
 	}
