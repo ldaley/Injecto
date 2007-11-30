@@ -26,8 +26,8 @@ class DynamicStaticMethodsInjecto
 	@InjectoProperty(write = false)
 	static dynamicStaticMethodDispatchTable = new DynamicDispatchTable() 
 	
-	static methodMissingDynamicDispatch = { String name, Object[] args ->
-		println "methodMissingDynamicDispatch: $name"
+	static staticMethodMissingDynamicDispatch = { String name, args ->
+
 		def dispatchTable = delegate.getDynamicStaticMethodDispatchTable()
 		def realArgs = DynamicDispatchHelper.prependMethodNameToArgs(name, args)
 		
@@ -44,7 +44,6 @@ class DynamicStaticMethodsInjecto
 	}
 	
 	static methodMissing = { String name, args ->
-		println "methodMissing (static): $name"
-		return delegate.methodMissingDynamicDispatch(name, args)
+		return delegate.staticMethodMissingDynamicDispatch(name, args)
 	}
 }

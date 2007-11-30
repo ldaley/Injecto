@@ -1,5 +1,0 @@
- ==============
- = Gynamo 1.0 =
- ==============
-
-* Provide annotation for gynamos to specify what classes are gynamizable by them.

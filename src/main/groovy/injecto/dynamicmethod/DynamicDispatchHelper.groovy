@@ -46,7 +46,6 @@ class DynamicDispatchHelper
 	 */
 	static String evaluateDynamicDispatchDestination(DynamicDispatchTable dispatchTable, String methodName, Object[] args)
 	{
-		println "evaluateDynamicDispatchDestination: $methodName"
 		def filteredDispatchTable = filterDispatchTable(dispatchTable, methodName, args)
 		
 		def dispatchTo
@@ -79,21 +78,16 @@ class DynamicDispatchHelper
 	 */
 	static DynamicDispatchTable filterDispatchTable(DynamicDispatchTable dispatchTable, String methodName, Object[] args)
 	{
-		println "filterDispatchTable: $methodName"
 		def shortestDistance = -1
 		def filteredDispatchTable = new DynamicDispatchTable()
 		def argTypes = MetaClassHelper.convertToTypeArray(args)
 		
 		dispatchTable.table.each { String injectoClassName, Set mappings ->
 			mappings.each { DynamicDispatchMapping mapping ->
-				println "Examining ${mapping.name}"
-				println argTypes
-				println mapping.argTypes
 				if (MetaClassHelper.parametersAreCompatible(argTypes, mapping.argTypes))
 				{
-					println "	is compatible"
 					long mappingDistance = MetaClassHelper.calculateParameterDistance(argTypes, mapping.argTypes)
-					println "	mappingDistance ${mappingDistance}"
+
 					if (filteredDispatchTable.isEmpty) 
 					{
 						filteredDispatchTable.add(injectoClassName, mapping)

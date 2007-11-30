@@ -26,10 +26,8 @@ class DynamicInstanceMethodsInjecto
 	@InjectoProperty(write = false)
 	static dynamicInstanceMethodDispatchTable = new DynamicDispatchTable()
 	
-	def methodMissingDynamicDispatch = { String name, Object[] args ->
-		println "methodMissingDynamicDispatch: $name"
+	def methodMissingDynamicDispatch = { String name, args ->
 		def dispatchTable = delegate.class.dynamicInstanceMethodDispatchTable
-		println dispatchTable
 		def realArgs = DynamicDispatchHelper.prependMethodNameToArgs(name, args)
 		
 		def destination = DynamicDispatchHelper.evaluateDynamicDispatchDestination(dispatchTable, name, realArgs)
@@ -45,7 +43,7 @@ class DynamicInstanceMethodsInjecto
 	}
 	
 	def methodMissing = { String name, args ->
-		println "methodMissing: $name"
+		
 		return delegate.methodMissingDynamicDispatch(name, args)
 	}
 }

@@ -7,7 +7,6 @@ class DynamicMethodInjectTest extends GroovyTestCase
 	
 	DynamicMethodInjectTest()
 	{
-		Injecto.logInjections = true
 		use(Injecto) { DMe1.inject(DMo1) }
 		instance = new DMe1()
 	}
@@ -16,6 +15,12 @@ class DynamicMethodInjectTest extends GroovyTestCase
 	{
 		assertEquals("simpleHandler", instance.simpleX(new Integer(3)))
 		assertEquals("simpleHandler2", instance.simpleXX(new Integer(3)))
+	}
+	
+	void testStatic()
+	{
+		assertEquals("simpleHandlerStatic", DMe1.simpleX(new Integer(3)))
+		assertEquals("simpleHandlerStatic2", DMe1.simpleXX(new Integer(3)))
 	}
 }
 
@@ -38,7 +43,7 @@ class DMo1
 		return "simpleHandler2"
 	}
 
-/*	@InjectoDynamicMethod(
+	@InjectoDynamicMethod(
 		pattern = "simple(.{1})",
 		precedence = 1
 	)
@@ -52,6 +57,6 @@ class DMo1
 	)
 	static simpleHandlerStatic2 = { String methodName, Integer number ->
 		return "simpleHandlerStatic2"
-	}*/
+	}
 	
 }
