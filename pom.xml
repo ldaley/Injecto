@@ -112,6 +112,20 @@
 		</plugins>
 	</reporting>
 	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>ldaley.com</id>
+			<name>ldaley.com Maven Repository</name>
+			<url>scp://ldaley.com/home/ldaley/mvn.ldaley.com/release</url>
+			<layout>default</layout>
+		</repository>
+		<snapshotRepository>
+			<uniqueVersion>true</uniqueVersion>
+			<id>ldaley.com</id>
+			<name>ldaley.com Maven Repository (Snapshot)</name>
+			<url>scp://ldaley.com/home/ldaley/mvn.ldaley.com/snapshot</url>
+			<layout>default</layout>
+		</snapshotRepository>
 		<site>
 			<id>ldaley.com</id>
 			<name>ldaley.com</name>
