@@ -4,7 +4,7 @@
 	<groupId>com.ldaley</groupId>
 	<artifactId>injecto</artifactId>
 	<packaging>jar</packaging>
-	<version>0.5</version>
+	<version>0.6-SNAPSHOT</version>
 	<name>Injecto</name>
 	<url>http://ldaley.com/injecto</url>
 	<organization>
@@ -12,7 +12,7 @@
 		<url>http://ldaley.com</url>
 	</organization>
 	<scm>
-		<connection>scm:svn:http://ldaley.com/svn/injecto</connection>
+		<connection>scm:svn:http://svn.ldaley.com/injecto</connection>
 	</scm>
 	<licenses>
 		<license>
@@ -83,6 +83,13 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-alpha-6</version>
+			</extension>
+		</extensions>
 	</build>
 	<reporting>
 		<plugins>
@@ -108,7 +115,7 @@
 		<site>
 			<id>ldaley.com</id>
 			<name>ldaley.com</name>
-			<url>scp://ldaley.com/users/home/ldaley/web/public/injecto/</url>
+			<url>scp://ldaley.com/home/ldaley/ldaley.com/injecto/</url>
 		</site>
 	</distributionManagement>
 </project>
