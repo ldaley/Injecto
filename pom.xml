@@ -12,7 +12,7 @@
         <url>http://ldaley.com</url>
     </organization>
     <scm>
-        <connection>scm:svn:http://ldaley.com/svn/injecto/trunk</connection>
+        <connection>scm:svn:http://svn.ldaley.com/injecto/trunk</connection>
         <url>http://websvn.ldaley.com/wsvn/injecto/trunk</url>
     </scm>
     <licenses>
