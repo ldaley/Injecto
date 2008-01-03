@@ -4,7 +4,7 @@
     <groupId>com.ldaley</groupId>
     <artifactId>injecto</artifactId>
     <packaging>jar</packaging>
-    <version>0.6</version>
+    <version>0.6-SNAPSHOT</version>
     <name>Injecto</name>
     <url>http://ldaley.com/injecto</url>
     <organization>
@@ -12,8 +12,8 @@
         <url>http://ldaley.com</url>
     </organization>
     <scm>
-        <connection>scm:svn:http://ldaley.com/svn/injecto/tags/injecto-0.6</connection>
-        <url>http://websvn.ldaley.com/wsvn/injecto/tags/injecto-0.6</url>
+        <connection>scm:svn:http://ldaley.com/svn/injecto/trunk</connection>
+        <url>http://websvn.ldaley.com/wsvn/injecto/trunk</url>
     </scm>
     <licenses>
         <license>
