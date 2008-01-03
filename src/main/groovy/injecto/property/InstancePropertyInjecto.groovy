@@ -17,15 +17,15 @@ package injecto.property;
 
 /**
  * 
- * @author Luke Daley <ld@ldaley.com>
+ * @author Luke Daley 
  */
 class InstancePropertyInjecto 
 {
-	def getInjectoProperty = { String propertyName -> 
-		return InjectoPropertyStorage[delegate][propertyName]
-	}
-	
-	def setInjectoProperty = { String propertyName, Object value ->
-		InjectoPropertyStorage[delegate][propertyName] = value
-	}
+    def getInjectoProperty = { String propertyName -> 
+        return InjectoPropertyStorage[delegate][propertyName]
+    }
+    
+    def setInjectoProperty = { String propertyName, Object value ->
+        InjectoPropertyStorage[delegate][propertyName] = value
+    }
 }

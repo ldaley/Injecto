@@ -1,11 +1,11 @@
-	------------
-	Dependencies
-	------------
+    ------------
+    Dependencies
+    ------------
 
 Dependencies
-	
-	Injecto's can specify that they depend on other Injectos via annotations ...
-	
+    
+    Injecto's can specify that they depend on other Injectos via annotations ...
+    
 +-------------------------------+
 import injecto.annotation.InjectoDependency
 import injecto.Injecto
@@ -13,16 +13,16 @@ import injecto.Injecto
 @InjectoDependency(InjectoB)
 class InjectoA
 {
-	def myMethod = { ->
-		return delegate.myDependedOnMethod()
-	}
+    def myMethod = { ->
+        return delegate.myDependedOnMethod()
+    }
 }
 
 class InjectoB{}
 {
-	def myDependedOnMethod = { ->
-		return "you rang?"
-	}
+    def myDependedOnMethod = { ->
+        return "you rang?"
+    }
 }
 
 class Injectee {}
@@ -34,7 +34,7 @@ assert(i.myDependedOnMethod() == "you rang?")
 assert(i.myMethod() == "you rang?")
 +-------------------------------+
 
-	If you have multiple dependencies you can use the <<<InjectoDependencies>>> annotation ...
+    If you have multiple dependencies you can use the <<<InjectoDependencies>>> annotation ...
 
 +-------------------------------+
 import injecto.annotation.InjectoDependencies
@@ -43,4 +43,4 @@ import injecto.annotation.InjectoDependencies
 class InjectoA {}
 +-------------------------------+
 
-	<<Warning:>> Be careful of circular dependencies. Your application will blow up (eventually) with <<StackOverflowError>> if you do have a circular dependency.
+    <<Warning:>> Be careful of circular dependencies. Your application will blow up (eventually) with <<StackOverflowError>> if you do have a circular dependency.

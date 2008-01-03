@@ -25,46 +25,46 @@ package injecto.dynamicmethod;
  * injecto's additions gets searched first. The set of DynamicDispatchMapping for each injecto are kept in
  * TreeSet ordered by the precedence key.
  * 
- * @author Luke Daley <ld@ldaley.com>
+ * @author Luke Daley 
  * @todo The underlying storage should be completely hidden here.
  */
 class DynamicDispatchTable 
 {
-	/**
-	 * Used to keep the DynamicDispatchMapping sorted by precedence ascending.
-	 */
-	static mappingComparator = [compare:{a,b -> a.precedence <=> b.precedence}] as Comparator
-	
-	/**
-	 * The storage for the table.
-	 */
-	Map table = [:]
-	
-	/**
-	 * The only way anything should be added.
-	 * 
-	 * If there are no entries for 'key', a new TreeSet is added under that key and the mapping added.
-	 * Otherwise the mapping is added to the existing set.
-	 */
-	void add(String key, DynamicDispatchMapping mapping)
-	{
-		if(table.containsKey(key) == false) table[key] = new TreeSet(mappingComparator)
-		table[key] << mapping
-	}
-	
-	/**
-	 * Empties the table.
-	 */
-	void clear()
-	{
-		table.clear()
-	}
-	
-	/**
-	 * Used to see if there is anything in the table.
-	 */
-	boolean getIsEmpty()
-	{
-		return table.size() == 0
-	}
+    /**
+     * Used to keep the DynamicDispatchMapping sorted by precedence ascending.
+     */
+    static mappingComparator = [compare:{a,b -> a.precedence <=> b.precedence}] as Comparator
+    
+    /**
+     * The storage for the table.
+     */
+    Map table = [:]
+    
+    /**
+     * The only way anything should be added.
+     * 
+     * If there are no entries for 'key', a new TreeSet is added under that key and the mapping added.
+     * Otherwise the mapping is added to the existing set.
+     */
+    void add(String key, DynamicDispatchMapping mapping)
+    {
+        if(table.containsKey(key) == false) table[key] = new TreeSet(mappingComparator)
+        table[key] << mapping
+    }
+    
+    /**
+     * Empties the table.
+     */
+    void clear()
+    {
+        table.clear()
+    }
+    
+    /**
+     * Used to see if there is anything in the table.
+     */
+    boolean getIsEmpty()
+    {
+        return table.size() == 0
+    }
 }

@@ -1,34 +1,34 @@
-	------------------
-	Managed Properties
-	------------------
+    ------------------
+    Managed Properties
+    ------------------
 
 Managed Properties
 
-	The Inject library provides a way for you to exercise some control of properties via the InjectoProperty annotation.
-	
+    The Inject library provides a way for you to exercise some control of properties via the InjectoProperty annotation.
+    
 +-------------------------------+
 import injecto.annotation.InjectoProperty
 import injecto.injecto
 
 class ExampleInjecto
 {
-	@InjectoProperty // by default creates a read/write property
-	def readWriteInstanceProperty = 'a'
+    @InjectoProperty // by default creates a read/write property
+    def readWriteInstanceProperty = 'a'
 
-	@InjectoProperty(write = false)
-	def readOnlyInstanceProperty = 'b'
+    @InjectoProperty(write = false)
+    def readOnlyInstanceProperty = 'b'
 
-	@InjectoProperty(read = false)
-	def writeOnlyInstanceProperty = 'c'
-	
-	@InjectoProperty // by default creates a read/write property
-	def readWriteStaticProperty = 'd'
+    @InjectoProperty(read = false)
+    def writeOnlyInstanceProperty = 'c'
+    
+    @InjectoProperty // by default creates a read/write property
+    def readWriteStaticProperty = 'd'
 
-	@InjectoProperty(write = false)
-	def readOnlyStaticProperty = 'e'
+    @InjectoProperty(write = false)
+    def readOnlyStaticProperty = 'e'
 
-	@InjectoProperty(read = false)
-	def writeOnlyStaticProperty = 'f'
+    @InjectoProperty(read = false)
+    def writeOnlyStaticProperty = 'f'
 }
 
 class Injectee {}
@@ -48,25 +48,25 @@ i.writeOnlyInstanceProperty = "changed"
 assert(i.writeOnlyInstanceProperty == 'changed') // Fails, can't read this property
 +-------------------------------+
 
-	And so on.
+    And so on.
 
-	You can define your own custom getters/setters that override the ones that would be generated for you. To access the actual property, you must use the getInjectoProperty/setInjectoProperty.
-	
+    You can define your own custom getters/setters that override the ones that would be generated for you. To access the actual property, you must use the getInjectoProperty/setInjectoProperty.
+    
 +-------------------------------+
 import injecto.annotation.InjectoProperty
 import injecto.injecto
 
 class ExampleInjecto
 {
-	@InjectoProperty
-	def myProperty = 'mine'
-	
-	def getMyProperty = { -> 
-		return delegate.getInjectoProperty('myProperty')
-	}
-	
-	def setMyProperty = { 
-		delegate.setInjectoProperty('myProperty', it)
-	}
+    @InjectoProperty
+    def myProperty = 'mine'
+    
+    def getMyProperty = { -> 
+        return delegate.getInjectoProperty('myProperty')
+    }
+    
+    def setMyProperty = { 
+        delegate.setInjectoProperty('myProperty', it)
+    }
 }
 +-------------------------------+

@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<site>
-  <body>
-    <menu name="Overview">
-      <item name="Introduction" href="/index.html"/>
-      <item name="Usage" href="/usage.html"/>
-      <item name="Download" href="/download.html"/>
-    </menu>
-    <menu name="Guide">
-      <item name="Injecto Classes" href="/guide/injectoClasses.html"/>
-      <item name="Injection" href="/guide/injection.html"/>
-      <item name="Dependencies" href="/guide/dependencies.html"/>
-      <item name="Dynamic Methods" href="/guide/dynamicMethods.html"/>
-      <item name="Managed Properties" href="/guide/managedProperties.html"/>
-    </menu>
-    <menu name="Development">
-      <item name="Issues" href="/issues.html"/>
-    </menu>
-	${reports}
-  </body>
-</site>
+<project name="Injecto">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-stylus-skin</artifactId>
+        <version>1.0.1</version>
+    </skin>
+    <bannerLeft>
+        <name>Injecto</name>
+        <src>images/injecto.png</src>
+    </bannerLeft>
+    <bannerRight>
+        <name>Made With TextMate</name>
+        <src>images/textmate.png</src>
+        <href>http://macromates.com</href>
+    </bannerRight>
+    <body>
+        <menu name="Overview">
+            <item name="Introduction" href="/index.html"/>
+            <item name="Download" href="/download.html"/>
+        </menu>
+        <menu name="Guide">
+            <item name="Injecto Classes" href="/guide/injectoClasses.html"/>
+            <item name="Injection" href="/guide/injection.html"/>
+            <item name="Dependencies" href="/guide/dependencies.html"/>
+            <item name="Dynamic Methods" href="/guide/dynamicMethods.html"/>
+            <item name="Managed Properties" href="/guide/managedProperties.html"/>
+        </menu>
+        ${reports}
+    </body>
+</project>

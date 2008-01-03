@@ -17,43 +17,43 @@ package injecto.property;
 
 /**
  * 
- * @author Luke Daley <ld@ldaley.com>
+ * @author Luke Daley 
  */
 class InjectoPropertyStorage 
 {
-	/**
-	 * The properties
-	 */
-	static private Map properties = Collections.synchronizedMap(new WeakHashMap())
-	
-	static private Map defaults = [:]
-	
-	/**
-	 * Allows use of the [] operator on the class.
-	 * 
-	 * @return Will always be a map.
-	 */
-	static Object getAt(owner)
-	{
-		if (properties[owner] == null)
-		{
-			properties[owner] = [:]
-			if ((owner instanceof Class) == false)
-			{
-				List defaults = defaults[owner.class]
-				def instanceMap = [:]
-				defaults.each { aDefault ->
-					if (instanceMap.containsKey(aDefault.injecto) == false) instanceMap[aDefault.injecto] = aDefault.injecto.newInstance()
-					properties[owner][aDefault.propertyName] = instanceMap[aDefault.injecto]."${aDefault.fieldName}"
-				}
-			}
-		}
- 		return properties[owner]
-	}
-	
-	static addDefaultFor(Class injectee, Class injecto, String propertyName, String fieldName)
-	{
-		if (defaults.containsKey(injectee) == false) defaults[injectee] = []
-		defaults[injectee] << [injecto: injecto, propertyName: propertyName, fieldName: fieldName]
-	}
+    /**
+     * The properties
+     */
+    static private Map properties = Collections.synchronizedMap(new WeakHashMap())
+    
+    static private Map defaults = [:]
+    
+    /**
+     * Allows use of the [] operator on the class.
+     * 
+     * @return Will always be a map.
+     */
+    static Object getAt(owner)
+    {
+        if (properties[owner] == null)
+        {
+            properties[owner] = [:]
+            if ((owner instanceof Class) == false)
+            {
+                List defaults = defaults[owner.class]
+                def instanceMap = [:]
+                defaults.each { aDefault ->
+                    if (instanceMap.containsKey(aDefault.injecto) == false) instanceMap[aDefault.injecto] = aDefault.injecto.newInstance()
+                    properties[owner][aDefault.propertyName] = instanceMap[aDefault.injecto]."${aDefault.fieldName}"
+                }
+            }
+        }
+         return properties[owner]
+    }
+    
+    static addDefaultFor(Class injectee, Class injecto, String propertyName, String fieldName)
+    {
+        if (defaults.containsKey(injectee) == false) defaults[injectee] = []
+        defaults[injectee] << [injecto: injecto, propertyName: propertyName, fieldName: fieldName]
+    }
 }

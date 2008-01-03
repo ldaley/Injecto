@@ -21,12 +21,12 @@ import java.util.regex.Pattern
  * 
  * Used as entries in the DynamicDispatchTable
  * @see DynamicDispatchTable
- * @author Luke Daley <ld@ldaley.com>
+ * @author Luke Daley 
  */
 class DynamicDispatchMapping 
 {
-	Pattern pattern
-	String name
-	int precedence
-	Class[] argTypes
+    Pattern pattern
+    String name
+    int precedence
+    Class[] argTypes
 }

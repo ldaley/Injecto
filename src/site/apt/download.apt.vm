@@ -1,0 +1,49 @@
+    --------
+    Download
+    --------
+    
+Download Injecto
+
+* Distribution Details
+
+** System Requirements
+
+*------+----------+--------------+
+||     || Version || Description |
+*------+----------+--------------+
+| JDK | 1.5 + | |
+*------+----------+--------------+
+| {{{http://groovy.codehaus.org/}Groovy}} | 1.5.0 + | |
+*------+----------+--------------+
+
+** Contents
+
+    * Injecto JAR
+    
+    * Injecto Source
+    
+    * Injecto Documentation/Site
+    
+* Stable Release (${stableVersion})
+
+*-------------------------+----------+-----------+------------+
+||                        || Mirrors || Checksum || Signature |
+*-------------------------+----------+-----------+------------+
+| Injecto ${stableVersion} (tar.bz2)     | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.tar.bz2} injecto-${stableVersion}-${releaseAssembly}.tar.bz2}} | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.tar.bz2.md5} injecto-${stableVersion}-${releaseAssembly}.tar.bz2.md5}} | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.tar.bz2.sha1} injecto-${stableVersion}-${releaseAssembly}.tar.bz2.sha1}} |
+*-------------------------+---------+----------+-----------+
+| Injecto ${stableVersion} (tar.gz)      | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.tar.gz} injecto-${stableVersion}-${releaseAssembly}.tar.gz}} | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.tar.gz.md5} injecto-${stableVersion}-${releaseAssembly}.tar.gz.md5}} | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.tar.gz.sha1} injecto-${stableVersion}-${releaseAssembly}.tar.gz.sha1}} |
+*-------------------------+---------+----------+-----------+
+| Injecto ${stableVersion} (zip)         | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.zip} injecto-${stableVersion}-${releaseAssembly}.zip}} | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.zip.md5} injecto-${stableVersion}-${releaseAssembly}.zip.md5}} | {{{${releaseBase}/${stableVersion}/injecto-${stableVersion}-${releaseAssembly}.zip.sha1} injecto-${stableVersion}-${releaseAssembly}.zip.sha1}} |
+*-------------------------+---------+----------+-----------+
+
+* Development Release (${project.version})
+
+*-------------------------+----------+-----------+------------+
+||                        || Mirrors || Checksum || Signature |
+*-------------------------+----------+-----------+------------+
+| Injecto ${project.version} (tar.bz2)     | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.tar.bz2} injecto-${project.version}-${releaseAssembly}.tar.bz2}} | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.tar.bz2.md5} injecto-${project.version}-${releaseAssembly}.tar.bz2.md5}} | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.tar.bz2.sha1} injecto-${project.version}-${releaseAssembly}.tar.bz2.sha1}} |
+*-------------------------+---------+----------+-----------+
+| Injecto ${project.version} (tar.gz)      | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.tar.gz} injecto-${project.version}-${releaseAssembly}.tar.gz}} | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.tar.gz.md5} injecto-${project.version}-${releaseAssembly}.tar.gz.md5}} | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.tar.gz.sha1} injecto-${project.version}-${releaseAssembly}.tar.gz.sha1}} |
+*-------------------------+---------+----------+-----------+
+| Injecto ${project.version} (zip)         | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.zip} injecto-${project.version}-${releaseAssembly}.zip}} | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.zip.md5} injecto-${project.version}-${releaseAssembly}.zip.md5}} | {{{${releaseBase}/${project.version}/injecto-${project.version}-${releaseAssembly}.zip.sha1} injecto-${project.version}-${releaseAssembly}.zip.sha1}} |
+*-------------------------+---------+----------+-----------+

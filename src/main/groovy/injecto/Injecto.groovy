@@ -20,84 +20,84 @@ import injecto.support.Injection;
 
 /**
  * 
- * @author Luke Daley <ld@ldaley.com>
+ * @author Luke Daley 
  */
 abstract class Injecto
 {
-	
-	/**
-	 * Maintains a record of which class have been injected with what
-	 */
-	private static registry = [:]
-	
-	static boolean logInjections = false
+    
+    /**
+     * Maintains a record of which class have been injected with what
+     */
+    private static registry = [:]
+    
+    static boolean logInjections = false
 
-	/**
-	 * Copies the readable properties from one class (injecto) to another (injectee)
-	 * 
-	 * @param injectee The class that will be injected into
-	 * @param injecto The class that contains the things to be injected
-	 */
-	static void inject(Class injectee, Class injecto)
-	{	
-		if (isInjected(injectee, injecto) == false)
-		{
-			injectDependencies(injectee, injecto)
-			tryPreInjectHook(injectee, injecto)
-			
-			Injection.allFor(injectee, injecto).each { it.inject() }
-			
-			addToRegistry(injectee, injecto)
-			tryPostInjectHook(injectee, injecto)
-		}
-	}
-	
-	static injectDependencies(Class injectee, Class injecto)
-	{
-		def dependencies = []
+    /**
+     * Copies the readable properties from one class (injecto) to another (injectee)
+     * 
+     * @param injectee The class that will be injected into
+     * @param injecto The class that contains the things to be injected
+     */
+    static void inject(Class injectee, Class injecto)
+    {    
+        if (isInjected(injectee, injecto) == false)
+        {
+            injectDependencies(injectee, injecto)
+            tryPreInjectHook(injectee, injecto)
+            
+            Injection.allFor(injectee, injecto).each { it.inject() }
+            
+            addToRegistry(injectee, injecto)
+            tryPostInjectHook(injectee, injecto)
+        }
+    }
+    
+    static injectDependencies(Class injectee, Class injecto)
+    {
+        def dependencies = []
 
-		injecto.getAnnotation(InjectoDependencies)?.value().each { dependencies << it }
-		if (injecto.getAnnotation(InjectoDependency)) dependencies << injecto.getAnnotation(InjectoDependency).value()
-		
-		dependencies.each { Injecto.inject(injectee, it) }
-	}
-	
-	private static tryPreInjectHook(Class injectee, Class injecto)
-	{
-		try
-		{
-			injecto.preInject(injectee)
-		}
-		catch (MissingMethodException e)
-		{
-			// TODO Need to check if the missing method is due to preInject or not
-		}
-	}
+        injecto.getAnnotation(InjectoDependencies)?.value().each { dependencies << it }
+        if (injecto.getAnnotation(InjectoDependency)) dependencies << injecto.getAnnotation(InjectoDependency).value()
+        
+        dependencies.each { Injecto.inject(injectee, it) }
+    }
+    
+    private static tryPreInjectHook(Class injectee, Class injecto)
+    {
+        try
+        {
+            injecto.preInject(injectee)
+        }
+        catch (MissingMethodException e)
+        {
+            // TODO Need to check if the missing method is due to preInject or not
+        }
+    }
 
-	private static tryPostInjectHook(Class injectee, Class injecto)
-	{
-		try
-		{
-			injecto.postInject(injectee)
-		}
-		catch (MissingMethodException e)
-		{
-			// TODO Need to check if the missing method is due to postInject or not
-		}
-	}
-	
-	private static addToRegistry(Class injectee, Class injecto)
-	{
-		if (registry[injectee.name] == null) registry[injectee.name] = []
-		registry[injectee.name] << injecto.name
-	}
+    private static tryPostInjectHook(Class injectee, Class injecto)
+    {
+        try
+        {
+            injecto.postInject(injectee)
+        }
+        catch (MissingMethodException e)
+        {
+            // TODO Need to check if the missing method is due to postInject or not
+        }
+    }
+    
+    private static addToRegistry(Class injectee, Class injecto)
+    {
+        if (registry[injectee.name] == null) registry[injectee.name] = []
+        registry[injectee.name] << injecto.name
+    }
 
-	/**
-	 * 
-	 */
-	static boolean isInjected(Class injectee, Class injecto)
-	{
-		return registry[injectee.name]?.contains(injecto.name)
-	}
+    /**
+     * 
+     */
+    static boolean isInjected(Class injectee, Class injecto)
+    {
+        return registry[injectee.name]?.contains(injecto.name)
+    }
 
 }

@@ -19,31 +19,31 @@ import injecto.annotation.InjectoProperty
 /**
  * An injecto that handles the dynamic dispatch on classes.
  * 
- * @author Luke Daley <ld@ldaley.com>
+ * @author Luke Daley 
  */
 class DynamicStaticMethodsInjecto 
 {
-	@InjectoProperty(write = false)
-	static dynamicStaticMethodDispatchTable = new DynamicDispatchTable() 
-	
-	static staticMethodMissingDynamicDispatch = { String name, args ->
+    @InjectoProperty(write = false)
+    static dynamicStaticMethodDispatchTable = new DynamicDispatchTable() 
+    
+    static staticMethodMissingDynamicDispatch = { String name, args ->
 
-		def dispatchTable = delegate.getDynamicStaticMethodDispatchTable()
-		def realArgs = DynamicDispatchHelper.prependMethodNameToArgs(name, args)
-		
-		def destination = DynamicDispatchHelper.evaluateDynamicDispatchDestination(dispatchTable, name, realArgs)
-		if (destination)
-		{
-			def m = delegate.metaClass.getMetaMethod(destination, realArgs)
-			return m.invoke(delegate, realArgs)
-		}
-		else
-		{
-			throw new MissingMethodException(name, delegate.class, args)
-		}
-	}
-	
-	static methodMissing = { String name, args ->
-		return delegate.staticMethodMissingDynamicDispatch(name, args)
-	}
+        def dispatchTable = delegate.getDynamicStaticMethodDispatchTable()
+        def realArgs = DynamicDispatchHelper.prependMethodNameToArgs(name, args)
+        
+        def destination = DynamicDispatchHelper.evaluateDynamicDispatchDestination(dispatchTable, name, realArgs)
+        if (destination)
+        {
+            def m = delegate.metaClass.getMetaMethod(destination, realArgs)
+            return m.invoke(delegate, realArgs)
+        }
+        else
+        {
+            throw new MissingMethodException(name, delegate.class, args)
+        }
+    }
+    
+    static methodMissing = { String name, args ->
+        return delegate.staticMethodMissingDynamicDispatch(name, args)
+    }
 }

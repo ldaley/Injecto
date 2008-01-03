@@ -17,15 +17,15 @@ package injecto.property;
 
 /**
  * 
- * @author Luke Daley <ld@ldaley.com>
+ * @author Luke Daley 
  */
 class StaticPropertyInjecto 
 {
-	static getInjectoProperty = { String propertyName -> 
-		return InjectoPropertyStorage[delegate][propertyName]
-	}
-	
-	static setInjectoProperty = { String propertyName, Object value ->
-		InjectoPropertyStorage[delegate][propertyName] = value
-	}
+    static getInjectoProperty = { String propertyName -> 
+        return InjectoPropertyStorage[delegate][propertyName]
+    }
+    
+    static setInjectoProperty = { String propertyName, Object value ->
+        InjectoPropertyStorage[delegate][propertyName] = value
+    }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+        <format>tar.bz2</format>
+    </formats>
+    <baseDirectory>injecto</baseDirectory>
+    <includeSiteDirectory>true</includeSiteDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main</directory>
+            <outputDirectory>src</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/site</directory>
+            <outputDirectory>site</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <includes>
+                <include>LICENSE</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>target/injecto-${project.version}.jar</source>
+        </file>
+    </files>
+</assembly>

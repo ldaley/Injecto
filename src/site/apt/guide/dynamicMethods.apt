@@ -1,24 +1,24 @@
-	---------------
-	Dynamic Methods
-	---------------
+    ---------------
+    Dynamic Methods
+    ---------------
 
 Dynamic Methods
 
-	Dynamic methods are a convenient way to implement methods that have have dynamic names. Probably best illustrated by an example ...
-	
+    Dynamic methods are a convenient way to implement methods that have have dynamic names. Probably best illustrated by an example ...
+    
 +-------------------------------+
 import injecto.annotation.InjectoDynamicMethod
 import injecto.Injecto
 
 class DynamicInjecto
 {
-	@InjectoDynamicMethod(
-		pattern = "dynamic(.+)",
-		precedence = 1
-	)
-	def handleDynamic = { String methodName, String arg ->
-		"you called '$methodName' with arg '$arg'"
-	}
+    @InjectoDynamicMethod(
+        pattern = "dynamic(.+)",
+        precedence = 1
+    )
+    def handleDynamic = { String methodName, String arg ->
+        "you called '$methodName' with arg '$arg'"
+    }
 }
 
 use(Injecto) { String.inject(DynamicInjecto) }
@@ -26,49 +26,49 @@ use(Injecto) { String.inject(DynamicInjecto) }
 assert("".dynamicMethodNameThatDoesNotExist("dynamic") == "you called 'dynamicMethodNameThatDoesNotExist' with arg 'dynamic'"))
 +-------------------------------+
 
-	An Injecto dynamic method is annotated with <<<InjectoDynamicMethod>>>. This annotation requires two values.
-	
-	* pattern
-	
-	A regular expression (as a String) that needs to match against the called method name for the method to be invoked.
-	
-	* precedence
-	
-	The order in which the method will be tested for a match relative to other dynamic methods of the same Injecto, using the pattern against the called method name.
-	
+    An Injecto dynamic method is annotated with <<<InjectoDynamicMethod>>>. This annotation requires two values.
+    
+    * pattern
+    
+    A regular expression (as a String) that needs to match against the called method name for the method to be invoked.
+    
+    * precedence
+    
+    The order in which the method will be tested for a match relative to other dynamic methods of the same Injecto, using the pattern against the called method name.
+    
 * Dynamic Method Constraints
 
-	All Injecto dynamic methods must take a <<<String>>> as the first argument which will be the name of the called method that matched against the dynamic method.
+    All Injecto dynamic methods must take a <<<String>>> as the first argument which will be the name of the called method that matched against the dynamic method.
 
 * Evaluation
 
-	It is important to understand how dynamic calls are evaluated.
-	
+    It is important to understand how dynamic calls are evaluated.
+    
 ** Type Matching
 
-	The parameter list of the dynamic method must be compatible with the original method call for it to be invoked. Moreover, the dynamic method with the <most> compatible parameter list will be selected. This follows the same semantics as regular method calls.
-	
+    The parameter list of the dynamic method must be compatible with the original method call for it to be invoked. Moreover, the dynamic method with the <most> compatible parameter list will be selected. This follows the same semantics as regular method calls.
+    
 +-------------------------------+
 import injecto.annotation.InjectoDynamicMethod
 import injecto.Injecto
 
 class DynamicInjecto
 {
-	@InjectoDynamicMethod(
-		pattern = "dynamic(.+)",
-		precedence = 1
-	)
-	def handleDynamicWithObjectArg = { String methodName, Object arg ->
-		"handleDynamicWithObjectArg"
-	}
+    @InjectoDynamicMethod(
+        pattern = "dynamic(.+)",
+        precedence = 1
+    )
+    def handleDynamicWithObjectArg = { String methodName, Object arg ->
+        "handleDynamicWithObjectArg"
+    }
 
-	@InjectoDynamicMethod(
-		pattern = "dynamic(.+)",
-		precedence = 2
-	)
-	def handleDynamicWithStringArg = { String methodName, String arg ->
-		"handleDynamicWithStringArg"
-	}
+    @InjectoDynamicMethod(
+        pattern = "dynamic(.+)",
+        precedence = 2
+    )
+    def handleDynamicWithStringArg = { String methodName, String arg ->
+        "handleDynamicWithStringArg"
+    }
 }
 
 use(Injecto) { String.inject(DynamicInjecto) }
@@ -79,9 +79,9 @@ assert("".dynamicMethodNameThatDoesNotExist(new Integer(3)) == "handleDynamicWit
 
 ** Name Matching
 
-	If there are multiple Injecto dynamic methods that are of equal suitability in terms of parameter type, the name of the called method is then matched against the pattern for each suitable dynamic method.
+    If there are multiple Injecto dynamic methods that are of equal suitability in terms of parameter type, the name of the called method is then matched against the pattern for each suitable dynamic method.
 
-	The dynamic method patters are matched against the called method name in order of injection and precedence. Best explained by example ...
+    The dynamic method patters are matched against the called method name in order of injection and precedence. Best explained by example ...
 
 +-------------------------------+
 import injecto.annotation.InjectoDynamicMethod
@@ -89,40 +89,40 @@ import injecto.Injecto
 
 class InjectoA
 {
-	@InjectoDynamicMethod(
-		pattern = "dynamic(.?)",
-		precedence = 1
-	)
-	def injectoAhandler = { String methodName, Object arg ->
-		"injectoAhandler"
-	}
-	
-	@InjectoDynamicMethod(
-		pattern = "dynamic(.{1,})",
-		precedence = 2
-	)
-	def otherInjectoAhandler = { String methodName, Object arg ->
-		"otherInjectoAhandler"
-	}
+    @InjectoDynamicMethod(
+        pattern = "dynamic(.?)",
+        precedence = 1
+    )
+    def injectoAhandler = { String methodName, Object arg ->
+        "injectoAhandler"
+    }
+    
+    @InjectoDynamicMethod(
+        pattern = "dynamic(.{1,})",
+        precedence = 2
+    )
+    def otherInjectoAhandler = { String methodName, Object arg ->
+        "otherInjectoAhandler"
+    }
 }
 
 class InjectoB
 {
-	@InjectoDynamicMethod(
-		pattern = "dynamic(.?)",
-		precedence = 1
-	)
-	def injectoBhandler = { String methodName, Object arg ->
-		"injectoBhandler"
-	}
-	
-	@InjectoDynamicMethod(
-		pattern = "dynamic(.?)",
-		precedence = 1
-	)
-	def otherInjectoBhandler = { String methodName, String arg ->
-		"otherInjectoBhandler"
-	}
+    @InjectoDynamicMethod(
+        pattern = "dynamic(.?)",
+        precedence = 1
+    )
+    def injectoBhandler = { String methodName, Object arg ->
+        "injectoBhandler"
+    }
+    
+    @InjectoDynamicMethod(
+        pattern = "dynamic(.?)",
+        precedence = 1
+    )
+    def otherInjectoBhandler = { String methodName, String arg ->
+        "otherInjectoBhandler"
+    }
 }
 
 Class Injectee {}
@@ -130,39 +130,39 @@ use (Injecto) { [InjectoA, InjectoB].each{ Injectee.inject(it) } }
 def i = new Injectee()
 +-------------------------------+
 
-	How different calls resolve ...
+    How different calls resolve ...
 
 +-------------------------------+
 assert(i.dynamicX([]) == "injectoAhandler") 
 +-------------------------------+
 
-	The 'injectoAhandler', 'otherInjectoAhandler' and 'injectoBhandler' dynamic methods are eligible in terms of parameter types.
-	
-	The pattern for 'injectoAhandler' is tested first as InjectoA was injected <<before>> InjectoB and has the highest precedence (lowest number) of all the dynamic methods for that Injecto. The pattern matches so it is called.
-	
+    The 'injectoAhandler', 'otherInjectoAhandler' and 'injectoBhandler' dynamic methods are eligible in terms of parameter types.
+    
+    The pattern for 'injectoAhandler' is tested first as InjectoA was injected <<before>> InjectoB and has the highest precedence (lowest number) of all the dynamic methods for that Injecto. The pattern matches so it is called.
+    
 +-------------------------------+
 assert(i.dynamicXX([]) == "otherInjectoAhandler") 
 +-------------------------------+
 
-	The 'injectoAhandler', 'otherInjectoAhandler' and 'injectoBhandler' dynamic methods are eligible in terms of parameter types.
+    The 'injectoAhandler', 'otherInjectoAhandler' and 'injectoBhandler' dynamic methods are eligible in terms of parameter types.
 
-	The pattern for 'injectoAhandler' is tested first and it fails. The pattern for 'otherInjectoAhandler' is tested next as it has the next highest precedence, it matches so is called to handle the call.
-	
+    The pattern for 'injectoAhandler' is tested first and it fails. The pattern for 'otherInjectoAhandler' is tested next as it has the next highest precedence, it matches so is called to handle the call.
+    
 +-------------------------------+
 assert(i.dynamicX("") == "otherInjectoBhandler") 
 +-------------------------------+
 
-	The 'otherInjectoBhandler' dynamic methods parameter types match closer than any other dynamic methods. The pattern is tested and it succeeds.
+    The 'otherInjectoBhandler' dynamic methods parameter types match closer than any other dynamic methods. The pattern is tested and it succeeds.
 
 +-------------------------------+
 i.dynamicX("", "") // throws MissingMethodException
 +-------------------------------+
 
-	There are no dynamic methods that take those parameter types.
-	
-	<<Note:>> With the above arrangement, it is impossible to get to injectoBhandler.
-	
+    There are no dynamic methods that take those parameter types.
+    
+    <<Note:>> With the above arrangement, it is impossible to get to injectoBhandler.
+    
 * Static Dynamic Methods
 
-	Static dynamic methods are currently not supported. This is due to a current bug in Groovy and this feature will be added when this bug is resolved.
-	
+    Static dynamic methods are currently not supported. This is due to a current bug in Groovy and this feature will be added when this bug is resolved.
+    
