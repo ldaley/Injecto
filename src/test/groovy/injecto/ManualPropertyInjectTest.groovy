@@ -1,6 +1,8 @@
 package injecto;
 import injecto.annotation.*
 import injecto.property.InjectoPropertyStorage
+import org.apache.commons.lang.builder.HashCodeBuilder
+import org.apache.commons.lang.builder.EqualsBuilder
 
 /**
  * Some tests currently disabled because of Groovy bug.
@@ -37,7 +39,11 @@ class ManualPropertyInjectTest extends GroovyTestCase
     }
 }
 
-class MPe1 {}
+class MPe1 {
+    int hashCode() { HashCodeBuilder.reflectionHashCode(this) }
+    boolean equals(Object obj) { EqualsBuilder.reflectionEquals(this, obj) }  
+}
+
 class MPo1 
 {
     def getInstanceProperty = { -> 

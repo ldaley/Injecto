@@ -24,7 +24,7 @@ class InjectoPropertyStorage
     /**
      * The properties
      */
-    static private Map properties = Collections.synchronizedMap(new WeakHashMap())
+    static private Map properties = Collections.synchronizedMap(new WeakIdentityHashMap())
     
     static private Map defaults = [:]
     
